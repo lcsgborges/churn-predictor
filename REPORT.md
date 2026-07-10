@@ -42,7 +42,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 ### Diagrama de arquitetura
 
 ```
-              Link público único — FastAPI/uvicorn (porta 7860)
+                   Link público único — FastAPI/uvicorn
                  ┌───────────────────────────────────────────────┐
    Navegador ───▶│  GET /    → Produto (UI HTML/JS, templates)    │
    Sistemas  ───▶│  /api/*   → API JSON (predict, chat, health…)  │
@@ -64,7 +64,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
                 Monitoring (JSONL): latência · custo · fallback · guardrails
 ```
 
-> Um **único processo** (uvicorn) serve a UI e a API na mesma porta.
+> Um **único processo** (uvicorn) serve a UI e a API no mesmo endereço.
 
 ### Agent/model exploration (o que consideramos)
 
@@ -82,8 +82,8 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 - **Empacotamento:** um único **Dockerfile** (multi-stage) instala tudo, **treina o modelo no build**
   (reprodutível: clone → `docker compose up` → sistema no ar) e roda **um único processo**:
-  `uvicorn api.main:app` na porta 7860.
-- **Exposição:** o próprio FastAPI serve `GET /` (UI) e `/api/*` (API) na mesma porta, então
+  `uvicorn api.main:app`.
+- **Exposição:** o próprio FastAPI serve `GET /` (UI) e `/api/*` (API), então
   **produto e API ficam no mesmo link público** (`/api/predict`, `/api/health`, `/api/docs`).
 - **Entradas em produção:** a API recebe perfis novos de clientes (mesmo esquema do dataset) via `POST /api/predict`
   ou `POST /api/chat`; a UI (HTML + JS) monta esse JSON a partir do formulário e chama via `fetch`.

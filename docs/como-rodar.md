@@ -58,7 +58,7 @@ mkdocs build            # gera site/ estático
 ## Deploy em produção (VPS + EasyPanel)
 
 O sistema roda numa VPS via **EasyPanel**: um único container, build a partir do `Dockerfile`
-(Build Path `/`), porta interna **7860** e `OPENAI_API_KEY` nas variáveis de ambiente. O passo a passo
+(Build Path `/`) e `OPENAI_API_KEY` nas variáveis de ambiente. O passo a passo
 completo está em [Deploy na VPS (EasyPanel)](deploy.md). App no ar: <https://churn.lcsgborges.cloud/>.
 
 !!! tip "Deploy da documentação"

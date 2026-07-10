@@ -1,12 +1,12 @@
 # Deploy na sua VPS (EasyPanel)
 
 Guia passo a passo para hospedar o sistema numa VPS usando **EasyPanel**. O projeto é um único
-container Docker que expõe a porta **7860** (FastAPI serve a UI em `/` e a API em `/api/*`); o EasyPanel
-coloca um proxy (Traefik) na frente, cuida do domínio e do HTTPS.
+container Docker; o FastAPI serve a UI em `/` e a API em `/api/*`, enquanto o EasyPanel coloca um
+proxy (Traefik) na frente e cuida do domínio e do HTTPS.
 
 ```
-Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (FastAPI/uvicorn) ─┬─ GET /   → UI (HTML/JS)
-                                                                              └─ /api/*  → API JSON
+Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container (FastAPI/uvicorn) ─┬─ GET /   → UI (HTML/JS)
+                                                                        └─ /api/*  → API JSON
 ```
 
 ## Pré-requisitos
@@ -26,7 +26,7 @@ Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (Fas
     Cada serviço no EasyPanel constrói **um `Dockerfile` → um container**; ele **ignora** o
     `docker-compose.yml` (que serve só para rodar tudo localmente com um comando). Isso funciona aqui
     porque o nosso `Dockerfile` é **auto-contido**: um único processo (`uvicorn`) serve a UI e a API
-    na porta **7860**. Ou seja, não há vários serviços para orquestrar.
+    no mesmo container. Ou seja, não há vários serviços para orquestrar.
 
 ### 1. Criar o projeto e o serviço
 1. No EasyPanel: **Create Project** → dê um nome (ex.: `churn`).
@@ -94,7 +94,7 @@ curl https://churn.seudominio.com/api/health
    docker push ghcr.io/SEU_USUARIO/churn-agent:latest
    ```
 2. No EasyPanel: **+ Service → App → Source = Docker Image** → informe a imagem.
-3. Repita os passos **4 (env)**, **5 (domínio/porta 7860)** e **6 (deploy)** da Opção A.
+3. Repita os passos **4 (variáveis de ambiente)**, **5 (domínio e porta)** e **6 (deploy)** da Opção A.
 
 ---
 
@@ -127,7 +127,7 @@ saúde do serviço no painel.
 | Sintoma | Causa provável | Correção |
 |---|---|---|
 | Build falha em `python -m ml.train` | Build Path apontando para subpasta errada | Defina Build Path = `/` (raiz do repo) |
-| `502 Bad Gateway` no domínio | Porta errada no domínio | Use a porta **7860** |
+| `502 Bad Gateway` no domínio | Porta interna incorreta | Confira o valor indicado no passo 5 |
 | App responde mas sempre em *fallback* | `OPENAI_API_KEY` ausente/inválida | Configure a env e faça redeploy |
 | Build sem memória / muito lento | VPS com pouca RAM | Use a **Opção B** (imagem pronta) |
-| Página em branco / 404 nos `/api/*` | Porta ou proxy errados | Garanta que o domínio aponta para a porta interna **7860** (uvicorn) |
+| Página em branco / 404 nos `/api/*` | Rota ou proxy incorretos | Confira o domínio no EasyPanel e as rotas da aplicação |

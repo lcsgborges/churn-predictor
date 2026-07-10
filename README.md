@@ -28,7 +28,7 @@ ChurnPredictor recebe o perfil de um cliente de telecom, raciocina sobre o **ris
 flowchart LR
     U[Usuário] --> APP
     S[Sistemas externos] --> APP
-    APP["FastAPI · uvicorn (:7860)"] -->|"GET /"| UI[Produto · UI HTML/JS]
+    APP["FastAPI · uvicorn"] -->|"GET /"| UI[Produto · UI HTML/JS]
     APP -->|"/api/*"| API[API JSON]
     UI -. fetch .-> API
     API --> AG[Agente · LLM + ferramentas]
@@ -84,7 +84,7 @@ pytest                                               # testes
 ## Deploy
 
 Em produção o sistema roda numa VPS via **EasyPanel**: um único container, build a partir do
-`Dockerfile` (Build Path `/`), porta interna **7860** e `OPENAI_API_KEY` nas variáveis de ambiente.
+`Dockerfile` (Build Path `/`) e `OPENAI_API_KEY` nas variáveis de ambiente.
 Passo a passo completo em [docs/deploy.md](docs/deploy.md).
 
 App no ar: <https://churn.lcsgborges.cloud/>.

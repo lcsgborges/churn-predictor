@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TD
-    Nav[Navegador / Sistemas] --> APP["FastAPI + uvicorn — porta única :7860"]
+    Nav[Navegador / Sistemas] --> APP["FastAPI + uvicorn"]
 
     subgraph proc["Um único processo"]
         APP -->|"GET /"| UI[Produto — UI HTML/JS<br/>templates Jinja2]
@@ -29,7 +29,7 @@ flowchart TD
 
 ## Um processo, um link
 
-Um **único processo** (`uvicorn`) serve tudo na porta pública **7860**:
+Um **único processo** (`uvicorn`) serve toda a aplicação:
 
 - `/` → **produto** (UI em HTML, templates Jinja2 + JavaScript que consome a API)
 - `/api/*` → **API JSON** (`/api/predict`, `/api/chat`, `/api/health`, `/api/metrics`, `/api/docs`)
@@ -73,9 +73,9 @@ O que consideramos antes de decidir:
 ## Deployment
 
 - **Empacotamento:** um único `Dockerfile` (multi-stage) instala tudo, **treina o modelo no build** e
-  roda **um único processo** — `uvicorn api.main:app` na porta 7860. Reprodutível: clone →
+  roda **um único processo** — `uvicorn api.main:app`. Reprodutível: clone →
   `docker compose up` → no ar.
-- **Exposição:** uma porta pública (7860); o próprio FastAPI serve `/` (UI) e `/api/*` (API).
+- **Exposição:** o próprio FastAPI serve `/` (UI) e `/api/*` (API) no mesmo endereço público.
 - **Entradas em produção:** a API recebe perfis de clientes (mesmo esquema do dataset) via
   `POST /api/predict` ou `POST /api/chat`; a UI monta esse JSON a partir do formulário e chama via `fetch`.
 - Passo a passo em [Como rodar](como-rodar.md) e [Deploy na VPS](deploy.md).
