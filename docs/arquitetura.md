@@ -63,6 +63,13 @@ O que consideramos antes de decidir:
 - **Modelo preditivo:** comparamos **Regressão Logística** (baseline) e **Gradient Boosting** (escolhido) —
   ver [Avaliação](avaliacao.md).
 
+A visão abaixo reúne essas escolhas e mostra como o modelo preditivo, a ferramenta, o LLM e os
+mecanismos de confiabilidade se conectam no sistema:
+
+![Diagrama completo da arquitetura: FastAPI e interface conectados ao agente, à ferramenta predict_churn, ao modelo Gradient Boosting com SHAP, ao fallback e ao monitoramento](assets/arquitetura.png){ loading=lazy }
+
+_Resumo visual da arquitetura e das principais decisões do projeto._
+
 ## Decisões de projeto
 
 - **Uma ferramenta forte** (`predict_churn`) em vez de várias fracas → menos latência e menos erro.

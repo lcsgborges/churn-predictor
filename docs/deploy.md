@@ -4,9 +4,12 @@ Guia passo a passo para hospedar o sistema numa VPS usando **EasyPanel**. O proj
 container Docker; o FastAPI serve a UI em `/` e a API em `/api/*`, enquanto o EasyPanel coloca um
 proxy (Traefik) na frente e cuida do domínio e do HTTPS.
 
-```
-Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container (FastAPI/uvicorn) ─┬─ GET /   → UI (HTML/JS)
-                                                                        └─ /api/*  → API JSON
+```mermaid
+flowchart LR
+    INTERNET[Internet] -->|HTTPS| PROXY[Traefik · EasyPanel]
+    PROXY --> APP[Container · FastAPI + Uvicorn]
+    APP -->|GET /| UI[Interface · HTML/JS]
+    APP -->|/api/*| API[API JSON]
 ```
 
 ## Pré-requisitos
