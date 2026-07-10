@@ -1,6 +1,5 @@
 ---
 title: ChurnPredictor
-emoji: 📉
 colorFrom: red
 colorTo: indigo
 sdk: docker
@@ -8,7 +7,7 @@ app_port: 7860
 pinned: false
 ---
 
-# 📉 ChurnPredictor — Agente de Previsão de Churn
+# ChurnPredictor — Agente de Previsão de Churn
 
 Sistema **agente → API → produto** que recebe o perfil de um cliente de telecom,
 raciocina sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação

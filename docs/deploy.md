@@ -33,7 +33,7 @@ Na aba **Source**, escolha **GitHub** (conecte a conta/repo) ou **Git** (URL pú
 |---|---|
 | Repository / URL | seu repositório |
 | Branch / Ref | `main` (ou `feat/lucas-guimaraes`) |
-| **Build Path** | `/1-1_lucas_guimaraes` ⚠️ **essencial** |
+| **Build Path** | `/1-1_lucas_guimaraes` — **essencial** |
 
 !!! warning "Build Path é obrigatório"
     O `Dockerfile` faz `COPY . .` esperando a pasta `1-1_lucas_guimaraes` como contexto de build.

@@ -39,7 +39,7 @@ CHOICES = {
     ],
 }
 
-st.set_page_config(page_title="Agente de Retenção de Clientes", page_icon="📉", layout="wide")
+st.set_page_config(page_title="ChurnPredictor", page_icon=":material/trending_down:", layout="wide")
 
 
 def api_post(path: str, payload: dict) -> dict | None:
@@ -141,7 +141,11 @@ def render_result(data: dict):
     st.markdown("### Recomendação do agente")
     st.markdown(data["answer"])
     meta = data.get("meta", {})
-    tag = "⚠️ modo contingência (fallback)" if meta.get("fallback") else "✅ agente LLM"
+    tag = (
+        ":material/warning: modo contingência (fallback)"
+        if meta.get("fallback")
+        else ":material/check_circle: agente LLM"
+    )
     st.caption(
         f"{tag} · latência {meta.get('latency_ms')} ms · custo ${meta.get('cost_usd', 0):.5f} "
         f"· trace {meta.get('trace_id')}"
@@ -200,20 +204,26 @@ def tab_monitor():
 
 
 def main():
-    st.title("📉 Agente de Retenção de Clientes")
+    st.title(":material/trending_down: ChurnPredictor")
     st.caption(
         "Recebe o perfil de um cliente, raciocina sobre o risco de churn (modelo ML + LLM) "
         "e recomenda uma ação de retenção. Trilha 1.1."
     )
     health = api_get("/health")
     if health:
-        badge = "🟢 online" if health.get("model_ready") else "🟡 modelo não treinado"
+        badge = (
+            ":material/check_circle: online"
+            if health.get("model_ready")
+            else ":material/pending: modelo não treinado"
+        )
         st.sidebar.caption(f"API: {badge}")
     else:
-        st.sidebar.caption("API: 🔴 offline")
+        st.sidebar.caption("API: :material/cancel: offline")
 
     customer = customer_form()
-    t1, t2, t3 = st.tabs(["📊 Análise", "💬 Chat de retenção", "📈 Monitoramento"])
+    t1, t2, t3 = st.tabs(
+        [":material/analytics: Análise", ":material/chat: Chat de retenção", ":material/monitoring: Monitoramento"]
+    )
     with t1:
         tab_analise(customer)
     with t2:
