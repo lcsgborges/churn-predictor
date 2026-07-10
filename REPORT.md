@@ -166,7 +166,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 ### UX
 - **Claro:** resposta padronizada *Risco → Por quê → Ação*, com medidor visual e gráfico de fatores.
-- **Rápido:** presets de cliente (alto/baixo risco) para demonstração imediata.
+- **Rápido:** perfis fictícios de exemplo (alto/baixo risco) para demonstração imediata.
 - **Quando erra/tem incerteza:** faixa de risco (alto/médio/baixo) comunica confiança; no modo contingência,
   o sistema **avisa** que o LLM está indisponível mas que a previsão do modelo é válida.
 
@@ -174,7 +174,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 ## 5. Demonstração
 
-_Vídeo: preencher o link._ Roteiro sugerido: (1) carregar preset "Alto risco" → analisar → mostrar
+_Vídeo: preencher o link._ Roteiro sugerido: (1) carregar o perfil fictício "Exemplo: alto risco" → analisar → mostrar
 probabilidade, fatores SHAP e ação; (2) usar o chat de retenção; (3) tentar um jailbreak → guardrail;
 (4) chamar a API pública via `curl /api/predict`; (5) abrir a aba Monitoramento.
 

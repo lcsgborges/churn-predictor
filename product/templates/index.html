@@ -19,8 +19,9 @@
       }
     }
     * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--ink); line-height: 1.5; }
+      background: var(--bg); color: var(--ink); line-height: 1.5; overflow-wrap: break-word; }
     a { color: var(--brand); }
     header { display: flex; align-items: center; gap: 12px; padding: 14px 22px;
       background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
@@ -30,19 +31,22 @@
     .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; }
     .dot.ok { background: var(--green); } .dot.warn { background: var(--amber); } .dot.off { background: var(--red); }
-    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 18px; padding: 18px; align-items: start; }
-    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    .layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 18px; padding: 18px;
+      align-items: start; max-width: 1600px; margin: 0 auto; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
       box-shadow: var(--shadow); }
     aside { position: sticky; top: 72px; }
     aside .card { padding: 16px; }
     aside h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 10px; }
+    .profile-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .profile-toggle { display: none; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 13px; margin-bottom: 4px; color: var(--muted); }
     .field select, .field input[type=number] { width: 100%; padding: 8px 10px; border-radius: 8px;
       border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14px; }
     .checkline { display: flex; align-items: center; gap: 8px; }
     .presets { display: flex; gap: 8px; margin-bottom: 14px; }
+    .preset-help { margin: 0 0 8px; }
     button { font: inherit; cursor: pointer; }
     .btn { border: 1px solid var(--border); background: var(--bg); color: var(--ink);
       border-radius: 8px; padding: 8px 12px; font-size: 13px; }
@@ -56,6 +60,7 @@
       border-bottom: 2px solid transparent; }
     .tab.active { color: var(--ink); border-bottom-color: var(--brand); font-weight: 600; }
     .panel { display: none; } .panel.active { display: block; }
+    main { min-width: 0; }
     main .card { padding: 20px; }
     .muted { color: var(--muted); font-size: 13px; }
     .result-grid { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: center; }
@@ -69,7 +74,7 @@
     .fmid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--muted); opacity: .5; }
     .recommend { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
     .recommend h3 { margin: 0 0 8px; font-size: 15px; }
-    .meta { margin-top: 12px; font-size: 12px; color: var(--muted); }
+    .meta { margin-top: 12px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
     .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border); }
     .chip.fb { color: var(--amber); border-color: var(--amber); } .chip.llm { color: var(--green); border-color: var(--green); }
     .chat { display: flex; flex-direction: column; height: 440px; }
@@ -92,6 +97,49 @@
       border-top-color: var(--brand); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; }
     @keyframes sp { to { transform: rotate(360deg); } }
     svg.icon { width: 16px; height: 16px; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: minmax(0, 1fr); padding: 14px; gap: 14px; }
+      aside { position: static; }
+      .profile-heading h2 { margin: 0; }
+      .profile-toggle { display: inline-flex; min-height: 40px; align-items: center; }
+      .profile-body { margin-top: 12px; }
+      .profile-card.collapsed .profile-body { display: none; }
+    }
+    @media (max-width: 620px) {
+      header { position: static; padding: 12px 14px; flex-wrap: wrap; gap: 8px 10px; }
+      header > svg.icon { flex: 0 0 auto; }
+      header > div { flex: 1; min-width: 0; }
+      header .sub { font-size: 12px; }
+      header .spacer { display: none; }
+      header .badge { min-height: 32px; }
+      header #apiBadge { margin-left: 26px; }
+      .layout { padding: 10px; gap: 10px; }
+      aside .card, main .card { padding: 14px; border-radius: 10px; }
+      .presets { display: grid; grid-template-columns: 1fr 1fr; }
+      .btn { min-height: 44px; }
+      .field select, .field input[type=number], .chat-input input { min-height: 44px; font-size: 16px; }
+      .tabs { flex-wrap: nowrap; overflow-x: auto; margin: 0 -14px 16px; padding: 0 8px;
+        scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+      .tab { min-height: 44px; padding: 9px 12px; white-space: nowrap; flex: 0 0 auto; }
+      .result-grid { gap: 12px; }
+      .factor { grid-template-columns: minmax(90px, 42%) minmax(0, 1fr); gap: 6px; }
+      .factor > div:first-child { overflow-wrap: anywhere; }
+      .chat { height: min(440px, calc(100dvh - 230px)); min-height: 360px; }
+      .msg { max-width: 92%; }
+      .chat-input { align-items: stretch; }
+      .chat-input .btn { flex: 0 0 auto; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .metric { padding: 10px; min-width: 0; }
+      .metric .v { font-size: 18px; overflow-wrap: anywhere; }
+      .scroll { margin-right: -4px; -webkit-overflow-scrolling: touch; }
+    }
+    @media (max-width: 380px) {
+      header .sub { display: none; }
+      header #apiBadge { margin-left: 0; }
+      .metrics { grid-template-columns: 1fr; }
+      .chat-input { flex-direction: column; }
+      .chat-input .btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -111,13 +159,19 @@
 
   <div class="layout">
     <aside>
-      <div class="card">
-        <h2>Perfil do cliente</h2>
-        <div class="presets">
-          <button class="btn" onclick="loadPreset('alto')">Alto risco</button>
-          <button class="btn" onclick="loadPreset('baixo')">Baixo risco</button>
+      <div class="card profile-card" id="profileCard">
+        <div class="profile-heading">
+          <h2>Perfil do cliente</h2>
+          <button class="btn profile-toggle" id="profileToggle" type="button" aria-expanded="true"
+                  aria-controls="profileBody">Recolher</button>
         </div>
-        <form id="form">
+        <div class="profile-body" id="profileBody">
+          <p class="muted preset-help"><b>Exemplos de preenchimento:</b> use um perfil fictício ou edite os campos abaixo.</p>
+          <div class="presets">
+            <button class="btn" type="button" onclick="loadPreset('alto')">Exemplo: alto risco</button>
+            <button class="btn" type="button" onclick="loadPreset('baixo')">Exemplo: baixo risco</button>
+          </div>
+          <form id="form">
           {% set d = presets['alto'] %}
           {% for f in main_fields %}
             <div class="field">
@@ -155,7 +209,8 @@
               {% endfor %}
             </div>
           </details>
-        </form>
+          </form>
+        </div>
       </div>
     </aside>
 
@@ -171,7 +226,7 @@
         <section class="panel active" id="tab-analise">
           <button class="btn primary block" id="analyzeBtn" onclick="analyze()">Analisar cliente</button>
           <div id="result" style="margin-top:18px">
-            <p class="muted">Preencha o perfil na barra lateral (ou carregue um exemplo) e clique em <b>Analisar cliente</b>.</p>
+            <p class="muted">Preencha o perfil do cliente (ou carregue um exemplo) e clique em <b>Analisar cliente</b>.</p>
           </div>
         </section>
 
@@ -195,7 +250,7 @@
         <section class="panel help" id="tab-ajuda">
           <h3 style="margin-top:0">Como usar</h3>
           <ol class="help">
-            <li>Preencha o <b>perfil do cliente</b> na barra lateral, ou use <b>Alto/Baixo risco</b> para um exemplo.</li>
+            <li>Abra o <b>perfil do cliente</b>, preencha os campos ou carregue um dos <b>perfis fictícios de exemplo</b> (alto ou baixo risco).</li>
             <li>Na aba <b>Análise</b>, clique em <b>Analisar cliente</b> para ver a probabilidade de churn, os fatores (verde reduz, vermelho aumenta) e a ação recomendada.</li>
             <li>Use o <b>Chat de retenção</b> para perguntar sobre o cliente carregado.</li>
             <li>Acompanhe latência, custo e fallback em <b>Monitoramento</b>.</li>
@@ -215,6 +270,19 @@
   <script>
     const PRESETS = {{ presets | tojson }};
     const SELECT_IDS = {{ (main_fields + advanced_fields) | selectattr('kind','equalto','select') | map(attribute='name') | list | tojson }};
+
+    // ---- perfil responsivo ----
+    const profileCard = document.getElementById('profileCard');
+    const profileToggle = document.getElementById('profileToggle');
+    function setProfileCollapsed(collapsed) {
+      profileCard.classList.toggle('collapsed', collapsed);
+      profileToggle.setAttribute('aria-expanded', String(!collapsed));
+      profileToggle.textContent = collapsed ? 'Editar perfil' : 'Recolher';
+    }
+    profileToggle.addEventListener('click', () => {
+      setProfileCollapsed(!profileCard.classList.contains('collapsed'));
+    });
+    if (window.matchMedia('(max-width: 860px)').matches) setProfileCollapsed(true);
 
     function loadPreset(name) {
       const p = PRESETS[name]; if (!p) return;

@@ -8,7 +8,7 @@ do início ao resultado.
 
 ## Roteiro
 
-1. Carregar o preset **"Alto risco"** → **Analisar cliente** → mostrar probabilidade, fatores SHAP e a
+1. Carregar o perfil fictício **"Exemplo: alto risco"** → **Analisar cliente** → mostrar probabilidade, fatores SHAP e a
    ação de retenção recomendada.
 2. Usar o **Chat de retenção** para perguntar sobre o cliente carregado.
 3. Tentar um **jailbreak** ("ignore suas instruções...") → o guardrail bloqueia e reorienta.

@@ -43,6 +43,6 @@ Cada interação vira um **trace** JSONL (`monitoring/tracing.py`), agregado em 
 ## UX
 
 - **Claro:** resposta padronizada *Risco → Por quê → Ação*, com medidor e gráfico de fatores.
-- **Rápido:** presets de cliente (alto/baixo risco) para demonstração imediata.
+- **Rápido:** perfis fictícios de exemplo (alto/baixo risco) para demonstração imediata.
 - **Quando erra/tem incerteza:** a faixa de risco comunica confiança; no modo contingência, o sistema
   **avisa** que o LLM está indisponível mas que a previsão do modelo é válida.
