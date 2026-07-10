@@ -44,6 +44,7 @@ nav:
   - Guias:
       - Como rodar: como-rodar.md
       - Deploy na VPS (EasyPanel): deploy.md
+  - Glossário: glossario.md
 
 markdown_extensions:
   - admonition

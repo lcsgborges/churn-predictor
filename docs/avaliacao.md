@@ -9,6 +9,9 @@ Teste estratificado (n = 1.409), taxa-base de churn ≈ 26,5%.
 | Regressão Logística (baseline) | 0,633 | 0,842 | 0,524 | **0,765** | 0,622 | 0,54 |
 | **Gradient Boosting (escolhido)** | **0,660** | 0,843 | 0,562 | 0,714 | **0,629** | 0,34 |
 
+Se essas métricas forem novas para você, consulte as explicações de
+[PR-AUC, ROC-AUC, F1, recall e limiar](glossario.md#metricas-de-aprendizado-de-maquina).
+
 - **Critério:** maior **PR-AUC** (adequado ao desbalanceamento). O limiar **não** é 0,5 fixo — é tunado
   para maximizar F1.
 - **Trade-off honesto:** o baseline tem recall maior; o GB tem melhor PR-AUC/precisão. Para retenção,

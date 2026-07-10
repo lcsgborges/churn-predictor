@@ -68,6 +68,7 @@ Na aba **Domains**:
 
 ### 6. Deploy
 Clique em **Deploy**. Acompanhe os logs do build (o treino do modelo aparece: `[gradient_boosting] PR-AUC=...`).
+Veja [como interpretar o log de treinamento](glossario.md#como-ler-o-log-de-treinamento).
 Na primeira vez leva alguns minutos (instalação das dependências).
 
 ### 7. Verificar
