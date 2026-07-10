@@ -26,15 +26,16 @@ ChurnPredictor recebe o perfil de um cliente de telecom, raciocina sobre o **ris
 
 ```mermaid
 flowchart LR
-    U[Usuário] --> NGX
-    S[Sistemas externos] --> NGX
-    NGX["nginx (:7860)"] -->|"/"| ST[Streamlit · produto]
-    NGX -->|"/api/*"| API[FastAPI · API]
+    U[Usuário] --> APP
+    S[Sistemas externos] --> APP
+    APP["FastAPI · uvicorn (:7860)"] -->|"GET /"| UI[Produto · UI HTML/JS]
+    APP -->|"/api/*"| API[API JSON]
+    UI -. fetch .-> API
     API --> AG[Agente · LLM + ferramentas]
     AG --> ML[Modelo ML + SHAP]
 ```
 
-Um único container serve **produto e API** no mesmo link.
+Um único processo (FastAPI/uvicorn) serve **produto e API** no mesmo link.
 
 ## Rodar localmente (um comando)
 
@@ -65,8 +66,7 @@ curl -X POST http://localhost:7860/api/predict -H 'Content-Type: application/jso
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python -m ml.train                                   # treina models/churn_model.pkl
-uvicorn api.main:app --port 8000 &                   # API
-streamlit run product/app.py                         # produto (usa API_BASE_URL=http://localhost:8000)
+uvicorn api.main:app --reload --port 7860            # UI (/) + API (/api/*) no mesmo processo
 pytest                                               # testes
 ```
 
@@ -76,8 +76,8 @@ pytest                                               # testes
 |---|---|
 | `ml/` | pré-processamento, treino, predição e explicação (SHAP) |
 | `agent/` | orquestração do agente, prompts, ferramentas, guardrails, fallback |
-| `api/` | FastAPI (`/predict`, `/chat`, `/health`, `/metrics`) + schemas Pydantic |
-| `product/` | painel Streamlit (Análise, Chat, Monitoramento) |
+| `api/` | FastAPI: API JSON (`/api/*`) **e** a UI (`GET /`, templates Jinja2) |
+| `product/` | template da UI (`templates/index.html`) + metadados do formulário |
 | `monitoring/` | tracing JSONL (latência, custo, fallback, guardrails) |
 | `data/` | dataset Telco Churn + Data Card |
 
@@ -85,4 +85,6 @@ pytest                                               # testes
 
 Em produção o sistema roda numa VPS via **EasyPanel**: um único container, build a partir do
 `Dockerfile` (Build Path `/`), porta interna **7860** e `OPENAI_API_KEY` nas variáveis de ambiente.
-Passo a passo completo em [docs/deploy.md](docs/deploy.md). App no ar: <https://churn.lcsgborges.cloud/>.
+Passo a passo completo em [docs/deploy.md](docs/deploy.md).
+
+App no ar: <https://churn.lcsgborges.cloud/>.

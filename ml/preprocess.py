@@ -1,7 +1,7 @@
 """Pré-processamento do Telco Customer Churn.
 
 Fonte única de verdade das features do problema: os módulos de treino, explicação,
-API (schemas) e produto (Streamlit) importam daqui para não divergirem.
+API (schemas) e produto (UI) importam daqui para não divergirem.
 """
 from __future__ import annotations
 

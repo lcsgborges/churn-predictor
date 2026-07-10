@@ -1,5 +1,5 @@
-# Imagem única: API (FastAPI) + Produto (Streamlit) + nginx (reverse proxy).
-# Mesma imagem roda local (docker compose) e em produção na VPS/EasyPanel (porta 7860).
+# Imagem única: FastAPI serve a API E o produto (UI em templates) no mesmo processo.
+# Roda local (docker compose) e em produção na VPS/EasyPanel na porta 7860.
 # Build multi-stage: o builder instala dependências e treina o modelo; o runtime
 # recebe só o venv pronto + o app + o modelo, ficando mais enxuto e rápido de subir.
 
@@ -31,19 +31,17 @@ FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH" \
-    API_BASE_URL=http://127.0.0.1:8000 \
     TRACE_LOG_PATH=/app/monitoring/traces.jsonl \
     HOME=/home/appuser \
-    # Evita oversubscription de threads nativas (numpy/OpenBLAS/OMP), causa comum de
-    # segfault e consumo de memória em containers com CPU/memória restritas.
+    # Evita oversubscription de threads nativas (numpy/OpenBLAS/OMP) em ambiente restrito.
     OMP_NUM_THREADS=1 \
     OPENBLAS_NUM_THREADS=1 \
     MKL_NUM_THREADS=1 \
     NUMEXPR_NUM_THREADS=1
 
-# Só o necessário em runtime: nginx (reverse proxy) + curl (healthcheck).
+# Só o necessário em runtime: curl para o healthcheck.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends nginx curl \
+    && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -54,8 +52,7 @@ COPY --from=builder /app /app
 
 # Usuário não-root (uid 1000) com HOME gravável — boa prática de segurança.
 RUN useradd -m -u 1000 appuser \
-    && chown -R appuser:appuser /app \
-    && chmod +x start.sh
+    && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 7860
@@ -63,4 +60,5 @@ EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
     CMD curl -fsS http://127.0.0.1:7860/api/health || exit 1
 
-CMD ["bash", "start.sh"]
+# Um único processo: uvicorn serve UI (/) + API (/api/*) na porta pública 7860.
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]

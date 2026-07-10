@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChurnPredictor</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M7 15l4-4 3 3 5-6'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #f4f6fb; --panel: #ffffff; --ink: #1f2430; --muted: #6b7280;
+      --border: #e5e7eb; --brand: #4f46e5; --brand-ink: #ffffff;
+      --red: #d62728; --green: #2ca02c; --amber: #ff7f0e;
+      --shadow: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f131a; --panel: #171c26; --ink: #e6e9ef; --muted: #9aa4b2;
+        --border: #262d3a; --brand: #6366f1;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.5; }
+    a { color: var(--brand); }
+    header { display: flex; align-items: center; gap: 12px; padding: 14px 22px;
+      background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+    header h1 { font-size: 18px; margin: 0; letter-spacing: -.02em; }
+    header .sub { color: var(--muted); font-size: 13px; }
+    header .spacer { flex: 1; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; }
+    .dot.ok { background: var(--green); } .dot.warn { background: var(--amber); } .dot.off { background: var(--red); }
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 18px; padding: 18px; align-items: start; }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: var(--shadow); }
+    aside { position: sticky; top: 72px; }
+    aside .card { padding: 16px; }
+    aside h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 10px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; margin-bottom: 4px; color: var(--muted); }
+    .field select, .field input[type=number] { width: 100%; padding: 8px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14px; }
+    .checkline { display: flex; align-items: center; gap: 8px; }
+    .presets { display: flex; gap: 8px; margin-bottom: 14px; }
+    button { font: inherit; cursor: pointer; }
+    .btn { border: 1px solid var(--border); background: var(--bg); color: var(--ink);
+      border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+    .btn:hover { border-color: var(--brand); }
+    .btn.primary { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); font-weight: 600; }
+    .btn.block { width: 100%; padding: 11px; font-size: 15px; margin-top: 4px; }
+    details.adv { margin-top: 6px; border-top: 1px dashed var(--border); padding-top: 10px; }
+    details.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
+    .tab { padding: 9px 14px; border: none; background: none; color: var(--muted); font-size: 14px;
+      border-bottom: 2px solid transparent; }
+    .tab.active { color: var(--ink); border-bottom-color: var(--brand); font-weight: 600; }
+    .panel { display: none; } .panel.active { display: block; }
+    main .card { padding: 20px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .result-grid { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: center; }
+    @media (max-width: 620px) { .result-grid { grid-template-columns: 1fr; } }
+    .gauge-wrap { text-align: center; }
+    .gauge-val { font-size: 30px; font-weight: 700; }
+    .gauge-band { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+    .factor { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+    .ftrack { position: relative; height: 16px; background: var(--bg); border-radius: 4px; border: 1px solid var(--border); }
+    .fbar { position: absolute; top: 0; height: 100%; }
+    .fmid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--muted); opacity: .5; }
+    .recommend { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .recommend h3 { margin: 0 0 8px; font-size: 15px; }
+    .meta { margin-top: 12px; font-size: 12px; color: var(--muted); }
+    .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border); }
+    .chip.fb { color: var(--amber); border-color: var(--amber); } .chip.llm { color: var(--green); border-color: var(--green); }
+    .chat { display: flex; flex-direction: column; height: 440px; }
+    .chat-log { flex: 1; overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; font-size: 14px; white-space: pre-wrap; }
+    .msg.user { align-self: flex-end; background: var(--brand); color: var(--brand-ink); }
+    .msg.bot { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); }
+    .chat-input { display: flex; gap: 8px; margin-top: 12px; }
+    .chat-input input { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--ink); font-size: 14px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .metric { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .metric .k { font-size: 12px; color: var(--muted); } .metric .v { font-size: 22px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { color: var(--muted); font-weight: 600; }
+    .scroll { overflow-x: auto; }
+    .help li { margin: 6px 0; }
+    .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border);
+      border-top-color: var(--brand); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; }
+    @keyframes sp { to { transform: rotate(360deg); } }
+    svg.icon { width: 16px; height: 16px; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; }
+  </style>
+</head>
+<body>
+  <header>
+    <svg class="icon" viewBox="0 0 24 24" style="color:var(--brand)"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+    <div>
+      <h1>ChurnPredictor</h1>
+      <div class="sub">Agente de previsão de churn — risco, explicação e ação de retenção</div>
+    </div>
+    <div class="spacer"></div>
+    <span id="apiBadge" class="badge"><span class="dot"></span> API</span>
+    <a class="badge" href="{{ docs_url }}" target="_blank" rel="noopener">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Documentação
+    </a>
+  </header>
+
+  <div class="layout">
+    <aside>
+      <div class="card">
+        <h2>Perfil do cliente</h2>
+        <div class="presets">
+          <button class="btn" onclick="loadPreset('alto')">Alto risco</button>
+          <button class="btn" onclick="loadPreset('baixo')">Baixo risco</button>
+        </div>
+        <form id="form">
+          {% set d = presets['alto'] %}
+          {% for f in main_fields %}
+            <div class="field">
+              {% if f.kind == 'bool' %}
+                <div class="checkline">
+                  <input type="checkbox" id="{{ f.name }}" {% if d[f.name] == 1 %}checked{% endif %} />
+                  <label for="{{ f.name }}" style="margin:0">{{ f.label }}</label>
+                </div>
+              {% elif f.kind == 'select' %}
+                <label for="{{ f.name }}">{{ f.label }}</label>
+                <select id="{{ f.name }}">
+                  {% for o in f.options %}
+                    <option value="{{ o.value }}" {% if o.value == d[f.name] %}selected{% endif %}>{{ o.label }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <label for="{{ f.name }}">{{ f.label }}</label>
+                <input type="number" id="{{ f.name }}" min="{{ f.min }}" max="{{ f.max }}"
+                       step="{{ f.step }}" value="{{ d[f.name] }}" />
+              {% endif %}
+            </div>
+          {% endfor %}
+          <details class="adv">
+            <summary>Serviços e opções avançadas</summary>
+            <div style="margin-top:10px">
+              {% for f in advanced_fields %}
+                <div class="field">
+                  <label for="{{ f.name }}">{{ f.label }}</label>
+                  <select id="{{ f.name }}">
+                    {% for o in f.options %}
+                      <option value="{{ o.value }}" {% if o.value == d[f.name] %}selected{% endif %}>{{ o.label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endfor %}
+            </div>
+          </details>
+        </form>
+      </div>
+    </aside>
+
+    <main>
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" data-tab="analise">Análise</button>
+          <button class="tab" data-tab="chat">Chat de retenção</button>
+          <button class="tab" data-tab="monitor">Monitoramento</button>
+          <button class="tab" data-tab="ajuda">Ajuda</button>
+        </div>
+
+        <section class="panel active" id="tab-analise">
+          <button class="btn primary block" id="analyzeBtn" onclick="analyze()">Analisar cliente</button>
+          <div id="result" style="margin-top:18px">
+            <p class="muted">Preencha o perfil na barra lateral (ou carregue um exemplo) e clique em <b>Analisar cliente</b>.</p>
+          </div>
+        </section>
+
+        <section class="panel" id="tab-chat">
+          <div class="chat">
+            <div class="chat-log" id="chatLog">
+              <div class="msg bot">Pergunte sobre o cliente carregado. Ex.: <i>Qual a melhor oferta para reter esse cliente?</i></div>
+            </div>
+            <div class="chat-input">
+              <input id="chatInput" placeholder="Escreva sua pergunta..." onkeydown="if(event.key==='Enter')sendChat()" />
+              <button class="btn primary" onclick="sendChat()">Enviar</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="tab-monitor">
+          <button class="btn" onclick="loadMetrics()">Atualizar métricas</button>
+          <div id="metrics" style="margin-top:14px"><p class="muted">Sem métricas ainda — faça algumas análises primeiro.</p></div>
+        </section>
+
+        <section class="panel help" id="tab-ajuda">
+          <h3 style="margin-top:0">Como usar</h3>
+          <ol class="help">
+            <li>Preencha o <b>perfil do cliente</b> na barra lateral, ou use <b>Alto/Baixo risco</b> para um exemplo.</li>
+            <li>Na aba <b>Análise</b>, clique em <b>Analisar cliente</b> para ver a probabilidade de churn, os fatores (verde reduz, vermelho aumenta) e a ação recomendada.</li>
+            <li>Use o <b>Chat de retenção</b> para perguntar sobre o cliente carregado.</li>
+            <li>Acompanhe latência, custo e fallback em <b>Monitoramento</b>.</li>
+          </ol>
+          <h3>Entenda o funcionamento</h3>
+          <ul class="help">
+            <li><a href="{{ docs_url }}arquitetura/" target="_blank" rel="noopener">Como o sistema é montado</a></li>
+            <li><a href="{{ docs_url }}agente/" target="_blank" rel="noopener">O agente e os guardrails</a></li>
+            <li><a href="{{ docs_url }}avaliacao/" target="_blank" rel="noopener">Avaliação do modelo</a></li>
+            <li><a href="{{ docs_url }}" target="_blank" rel="noopener">Documentação completa</a></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const PRESETS = {{ presets | tojson }};
+    const SELECT_IDS = {{ (main_fields + advanced_fields) | selectattr('kind','equalto','select') | map(attribute='name') | list | tojson }};
+
+    function loadPreset(name) {
+      const p = PRESETS[name]; if (!p) return;
+      for (const k in p) {
+        const el = document.getElementById(k); if (!el) continue;
+        if (el.type === 'checkbox') el.checked = p[k] === 1;
+        else el.value = p[k];
+      }
+    }
+    function collectCustomer() {
+      const c = {};
+      SELECT_IDS.forEach(id => { c[id] = document.getElementById(id).value; });
+      c.SeniorCitizen = document.getElementById('SeniorCitizen').checked ? 1 : 0;
+      c.tenure = parseFloat(document.getElementById('tenure').value) || 0;
+      c.MonthlyCharges = parseFloat(document.getElementById('MonthlyCharges').value) || 0;
+      c.TotalCharges = parseFloat(document.getElementById('TotalCharges').value) || 0;
+      return c;
+    }
+
+    // ---- tabs ----
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+      if (t.dataset.tab === 'monitor') loadMetrics();
+    }));
+
+    // ---- charts (SVG inline) ----
+    function bandColor(pct) { return pct >= 66 ? 'var(--red)' : pct >= 33 ? 'var(--amber)' : 'var(--green)'; }
+    function bandName(band, pct) {
+      if (band) return band;
+      return pct >= 66 ? 'alto' : pct >= 33 ? 'médio' : 'baixo';
+    }
+    function gaugeSVG(pct, band) {
+      pct = Math.max(0, Math.min(100, pct));
+      const R = 54, C = 2 * Math.PI * R, off = C * (1 - pct / 100), col = bandColor(pct);
+      return `<div class="gauge-wrap">
+        <svg viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="Probabilidade de churn ${pct.toFixed(1)}%">
+          <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--border)" stroke-width="14"/>
+          <circle cx="70" cy="70" r="${R}" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 70 70)"/>
+          <text x="70" y="68" text-anchor="middle" class="gauge-val" fill="var(--ink)" style="font-size:26px;font-weight:700">${pct.toFixed(1)}%</text>
+          <text x="70" y="90" text-anchor="middle" fill="${col}" style="font-size:12px;text-transform:uppercase;letter-spacing:.05em">${bandName(band, pct)}</text>
+        </svg>
+        <div class="muted">Probabilidade de churn</div>
+      </div>`;
+    }
+    function factorsHTML(factors) {
+      if (!factors || !factors.length) return '';
+      const maxAbs = Math.max(...factors.map(f => Math.abs(f.contribution))) || 1;
+      const rows = factors.map(f => {
+        const w = Math.abs(f.contribution) / maxAbs * 48;
+        const pos = f.contribution > 0;
+        const col = pos ? 'var(--red)' : 'var(--green)';
+        const style = pos ? `left:50%;width:${w}%;background:${col}`
+                          : `right:50%;width:${w}%;background:${col}`;
+        return `<div class="factor"><div title="${f.label}">${f.label}</div>
+          <div class="ftrack"><div class="fmid"></div><div class="fbar" style="${style}"></div></div></div>`;
+      }).join('');
+      return `<div style="margin-top:6px"><div class="muted" style="margin-bottom:6px">Fatores (SHAP) — <span style="color:var(--red)">vermelho aumenta</span>, <span style="color:var(--green)">verde reduz</span></div>${rows}</div>`;
+    }
+
+    // ---- analyze ----
+    async function analyze() {
+      const btn = document.getElementById('analyzeBtn');
+      const box = document.getElementById('result');
+      btn.disabled = true; box.innerHTML = '<span class="spin"></span> <span class="muted">Consultando o agente...</span>';
+      try {
+        const r = await fetch('/api/predict', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(collectCustomer())
+        });
+        if (r.status === 422) { box.innerHTML = '<p class="muted">Perfil inválido — revise os campos.</p>'; return; }
+        const d = await r.json();
+        renderResult(d);
+      } catch (e) {
+        box.innerHTML = '<p class="muted">Não foi possível falar com a API. Tente novamente.</p>';
+      } finally { btn.disabled = false; }
+    }
+    function renderResult(d) {
+      const pct = d.churn_probability_pct || 0;
+      const meta = d.meta || {};
+      const tag = meta.fallback
+        ? '<span class="chip fb">modo contingência (fallback)</span>'
+        : '<span class="chip llm">agente LLM</span>';
+      const answer = (d.answer || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+      document.getElementById('result').innerHTML = `
+        <div class="result-grid">
+          <div>${gaugeSVG(pct, d.risk_band)}</div>
+          <div>${factorsHTML(d.factors)}</div>
+        </div>
+        <div class="recommend"><h3>Recomendação do agente</h3><div>${answer}</div></div>
+        <div class="meta">${tag} · latência ${meta.latency_ms ?? '–'} ms · custo $${(meta.cost_usd || 0).toFixed(5)} · trace ${meta.trace_id ?? '–'}</div>`;
+    }
+
+    // ---- chat ----
+    async function sendChat() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim(); if (!msg) return;
+      const log = document.getElementById('chatLog');
+      input.value = '';
+      log.insertAdjacentHTML('beforeend', `<div class="msg user"></div>`);
+      log.lastChild.textContent = msg;
+      const bot = document.createElement('div');
+      bot.className = 'msg bot'; bot.innerHTML = '<span class="spin"></span>';
+      log.appendChild(bot); log.scrollTop = log.scrollHeight;
+      try {
+        const r = await fetch('/api/chat', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customer: collectCustomer(), message: msg })
+        });
+        const d = await r.json();
+        bot.innerHTML = (d.answer || 'Falha ao consultar a API.')
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+      } catch (e) { bot.textContent = 'Falha ao consultar a API.'; }
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ---- metrics ----
+    async function loadMetrics() {
+      const box = document.getElementById('metrics');
+      try {
+        const d = await (await fetch('/api/metrics')).json();
+        const s = d.summary || {};
+        if (!s.n_interactions) { box.innerHTML = '<p class="muted">Sem métricas ainda — faça algumas análises primeiro.</p>'; return; }
+        const cards = [
+          ['Interações', s.n_interactions],
+          ['Latência média', (s.avg_latency_ms ?? 0) + ' ms'],
+          ['Latência p95', (s.p95_latency_ms ?? 0) + ' ms'],
+          ['Custo total', '$' + (s.total_cost_usd ?? 0).toFixed(4)],
+          ['Taxa fallback', Math.round((s.fallback_rate ?? 0) * 100) + '%'],
+          ['Bloqueio guardrail', Math.round((s.guardrail_block_rate ?? 0) * 100) + '%'],
+        ].map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+        let table = '';
+        const rec = d.recent || [];
+        if (rec.length) {
+          const cols = Object.keys(rec[0]);
+          const head = cols.map(c => `<th>${c}</th>`).join('');
+          const body = rec.slice(-15).reverse().map(row =>
+            '<tr>' + cols.map(c => `<td>${row[c] ?? ''}</td>`).join('') + '</tr>').join('');
+          table = `<div class="scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+        }
+        box.innerHTML = `<div class="metrics">${cards}</div>${table}`;
+      } catch (e) { box.innerHTML = '<p class="muted">Não foi possível carregar as métricas.</p>'; }
+    }
+
+    // ---- health badge ----
+    async function checkHealth() {
+      const b = document.getElementById('apiBadge'), dot = b.querySelector('.dot');
+      try {
+        const d = await (await fetch('/api/health')).json();
+        if (d.model_ready) { dot.className = 'dot ok'; b.lastChild.textContent = ' API online'; }
+        else { dot.className = 'dot warn'; b.lastChild.textContent = ' modelo não treinado'; }
+      } catch (e) { dot.className = 'dot off'; b.lastChild.textContent = ' API offline'; }
+    }
+    checkHealth();
+  </script>
+</body>
+</html>

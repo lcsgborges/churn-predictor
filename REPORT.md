@@ -9,7 +9,7 @@
 | **Documentação:** | https://lcsgborges.github.io/churn-predictor/ |
 | **Repositório:** | https://github.com/lcsgborges/churn-predictor |
 | **Vídeo demo:** | _preencher_ |
-| **Integrantes:** | Lucas Guimarães |
+| **Integrante:** | Lucas Guimarães Borges — 222015159 |
 
 ---
 
@@ -42,11 +42,12 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 ### Diagrama de arquitetura
 
 ```
-                        Link público único — nginx (porta 7860)
+              Link público único — FastAPI/uvicorn (porta 7860)
                  ┌───────────────────────────────────────────────┐
-   Navegador ───▶│  /        → Streamlit  (produto :8501)         │
-   Sistemas  ───▶│  /api/*   → FastAPI    (API :8000)             │
+   Navegador ───▶│  GET /    → Produto (UI HTML/JS, templates)    │
+   Sistemas  ───▶│  /api/*   → API JSON (predict, chat, health…)  │
                  └───────────────────┬───────────────────────────┘
+                          UI chama /api/* via fetch
                                      ▼
                        ┌─────────────────────────────┐
                        │  Agente (agent/agent.py)     │
@@ -63,6 +64,8 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
                 Monitoring (JSONL): latência · custo · fallback · guardrails
 ```
 
+> Um **único processo** (uvicorn) serve a UI e a API na mesma porta.
+
 ### Agent/model exploration (o que consideramos)
 
 - **Tipo de agente.** Consideramos (a) um classificador "puro" exposto via API e (b) um agente com
@@ -77,13 +80,13 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 ### Deployment
 
-- **Empacotamento:** um único **Dockerfile** instala tudo, **treina o modelo no build** (reprodutível:
-  clone → `docker compose up` → sistema no ar) e roda **três processos** via `start.sh`: uvicorn (API),
-  Streamlit (produto) e **nginx** como reverse proxy.
-- **Exposição:** o deploy publica **uma** porta. O nginx roteia `/` → produto e `/api/*` → API, então
+- **Empacotamento:** um único **Dockerfile** (multi-stage) instala tudo, **treina o modelo no build**
+  (reprodutível: clone → `docker compose up` → sistema no ar) e roda **um único processo**:
+  `uvicorn api.main:app` na porta 7860.
+- **Exposição:** o próprio FastAPI serve `GET /` (UI) e `/api/*` (API) na mesma porta, então
   **produto e API ficam no mesmo link público** (`/api/predict`, `/api/health`, `/api/docs`).
 - **Entradas em produção:** a API recebe perfis novos de clientes (mesmo esquema do dataset) via `POST /api/predict`
-  ou `POST /api/chat`; o produto Streamlit monta esse JSON a partir do formulário.
+  ou `POST /api/chat`; a UI (HTML + JS) monta esse JSON a partir do formulário e chama via `fetch`.
 
 ### CI/CD e estratégia de confiabilidade
 
@@ -209,6 +212,6 @@ probabilidade, fatores SHAP e ação; (2) usar o chat de retenção; (3) tentar 
 - **Dataset:** Telco Customer Churn — IBM Sample Data ·
   Kaggle: <https://www.kaggle.com/datasets/blastchar/telco-customer-churn> ·
   Mirror IBM: <https://github.com/IBM/telco-customer-churn-on-icp4d>
-- **Bibliotecas:** scikit-learn, SHAP, FastAPI, Streamlit, OpenAI Python SDK, Plotly, nginx, Docker.
+- **Bibliotecas:** scikit-learn, SHAP, FastAPI, Jinja2 (templates), Uvicorn, OpenAI Python SDK, Docker.
 - **Modelo LLM:** OpenAI `gpt-4o-mini`.
 - **Explicabilidade:** Lundberg & Lee, *A Unified Approach to Interpreting Model Predictions* (SHAP), 2017.
