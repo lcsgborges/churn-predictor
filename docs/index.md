@@ -25,8 +25,8 @@ sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação +
 
 | | |
 |---|---|
-| **Aplicação (link):** | _preencher após deploy_ (ex.: `https://<seu-space>.hf.space/`) |
-| **API:** | _mesmo link_ · `/api/docs` · `/api/predict` · `/api/health` |
+| **Aplicação (link):** | <https://churn.lcsgborges.cloud/> |
+| **API:** | [`/api/docs`](https://churn.lcsgborges.cloud/api/docs) · `/api/predict` · `/api/health` |
 | **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
 | **Relatório completo:** | [`REPORT.md`](https://github.com/lcsgborges/churn-predictor/blob/main/REPORT.md) |
 | **Integrantes:** | Lucas Guimarães |

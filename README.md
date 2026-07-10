@@ -14,8 +14,10 @@ raciocina sobre o risco de cancelamento (churn) e devolve **probabilidade + expl
 + ação de retenção**. Modelo de ML (Gradient Boosting + SHAP) para o número e os fatores;
 LLM (OpenAI) para o raciocínio em linguagem natural; guardrails e fallback para confiabilidade.
 
+- **Aplicação (no ar):** <https://churn.lcsgborges.cloud/>
+- **Documentação (MkDocs):** <https://lcsgborges.github.io/churn-predictor/>
+- **Repositório:** <https://github.com/lcsgborges/churn-predictor>
 - **Relatório completo:** [REPORT.md](REPORT.md)
-- **Documentação (MkDocs):** pasta [`docs/`](docs/) · `mkdocs serve` · publicada no GitHub Pages
 - **Deploy na VPS (EasyPanel):** [docs/deploy.md](docs/deploy.md)
 - **Data card:** [data/DATA_CARD.md](data/DATA_CARD.md)
 

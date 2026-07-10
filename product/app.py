@@ -39,6 +39,47 @@ CHOICES = {
     ],
 }
 
+# Rótulos em PT para exibição. O modelo foi treinado com os valores em inglês, então
+# eles continuam sendo enviados à API — só a tela mostra a tradução (via format_func).
+VALUE_LABELS = {
+    "Female": "Feminino",
+    "Male": "Masculino",
+    "Yes": "Sim",
+    "No": "Não",
+    "No phone service": "Sem serviço de telefone",
+    "No internet service": "Sem internet",
+    "Fiber optic": "Fibra óptica",
+    "DSL": "DSL",
+    "Month-to-month": "Mensal",
+    "One year": "Anual",
+    "Two year": "2 anos",
+    "Electronic check": "Cheque eletrônico",
+    "Mailed check": "Cheque por correio",
+    "Bank transfer (automatic)": "Transferência bancária (automática)",
+    "Credit card (automatic)": "Cartão de crédito (automático)",
+}
+
+# Rótulos em PT dos campos de serviço (usados no expander de opções avançadas).
+FIELD_LABELS = {
+    "PhoneService": "Serviço de telefone",
+    "MultipleLines": "Múltiplas linhas",
+    "OnlineSecurity": "Segurança online",
+    "OnlineBackup": "Backup online",
+    "DeviceProtection": "Proteção de dispositivo",
+    "TechSupport": "Suporte técnico",
+    "StreamingTV": "Streaming de TV",
+    "StreamingMovies": "Streaming de filmes",
+    "PaperlessBilling": "Fatura digital (sem papel)",
+}
+
+
+def pt_label(value: str) -> str:
+    """Traduz um valor do formulário para exibição em português."""
+    return VALUE_LABELS.get(value, value)
+
+
+DOCS_URL = "https://lcsgborges.github.io/churn-predictor/"
+
 st.set_page_config(page_title="ChurnPredictor", page_icon=":material/trending_down:", layout="wide")
 
 
@@ -111,14 +152,14 @@ def customer_form() -> dict:
     high = preset == "Alto risco"
     c: dict = {}
     with st.sidebar:
-        c["gender"] = st.selectbox("Gênero", CHOICES["gender"])
+        c["gender"] = st.selectbox("Gênero", CHOICES["gender"], format_func=pt_label)
         c["SeniorCitizen"] = 1 if st.checkbox("Idoso (65+)", value=False) else 0
-        c["Partner"] = st.selectbox("Tem parceiro(a)", CHOICES["Partner"], index=1 if high else 0)
-        c["Dependents"] = st.selectbox("Tem dependentes", CHOICES["Dependents"], index=1 if high else 0)
+        c["Partner"] = st.selectbox("Tem parceiro(a)", CHOICES["Partner"], index=1 if high else 0, format_func=pt_label)
+        c["Dependents"] = st.selectbox("Tem dependentes", CHOICES["Dependents"], index=1 if high else 0, format_func=pt_label)
         c["tenure"] = st.slider("Tempo de casa (meses)", 0, 72, 2 if high else 48)
-        c["Contract"] = st.selectbox("Contrato", CHOICES["Contract"], index=0 if high else 2)
-        c["InternetService"] = st.selectbox("Internet", CHOICES["InternetService"], index=0 if high else 1)
-        c["PaymentMethod"] = st.selectbox("Pagamento", CHOICES["PaymentMethod"], index=0 if high else 3)
+        c["Contract"] = st.selectbox("Contrato", CHOICES["Contract"], index=0 if high else 2, format_func=pt_label)
+        c["InternetService"] = st.selectbox("Internet", CHOICES["InternetService"], index=0 if high else 1, format_func=pt_label)
+        c["PaymentMethod"] = st.selectbox("Pagamento", CHOICES["PaymentMethod"], index=0 if high else 3, format_func=pt_label)
         c["MonthlyCharges"] = st.slider("Cobrança mensal", 0.0, 200.0, 95.0 if high else 45.0)
         c["TotalCharges"] = st.slider("Cobrança total", 0.0, 9000.0, 190.0 if high else 2200.0)
         with st.expander("Serviços e opções avançadas"):
@@ -127,7 +168,7 @@ def customer_form() -> dict:
                 "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies",
                 "PaperlessBilling",
             ]:
-                c[key] = st.selectbox(key, CHOICES[key])
+                c[key] = st.selectbox(FIELD_LABELS[key], CHOICES[key], format_func=pt_label)
     return c
 
 
@@ -203,6 +244,36 @@ def tab_monitor():
     st.dataframe(data["recent"], use_container_width=True, height=300)
 
 
+def tab_ajuda():
+    st.subheader("Ajuda e documentação")
+    st.markdown(
+        "Novo por aqui? Esta aba resume o funcionamento e leva à documentação completa do projeto."
+    )
+    st.markdown(
+        """
+#### Como usar em 4 passos
+
+1. **Preencha o perfil do cliente** na barra lateral — ou use *Carregar exemplo* (Alto/Baixo risco)
+   para um preenchimento automático.
+2. Na aba **Análise**, clique em *Analisar cliente*: você verá a **probabilidade de churn**, os
+   **fatores** que mais pesam (verde reduz, vermelho aumenta) e a **ação de retenção** recomendada.
+3. Use o **Chat de retenção** para perguntar sobre o cliente carregado (ex.: melhor oferta para retê-lo).
+4. Acompanhe **latência, custo e taxa de fallback** na aba **Monitoramento**.
+"""
+    )
+    st.markdown("#### Entenda o funcionamento (documentação)")
+    st.markdown(
+        f"""
+- [Como o sistema é montado (arquitetura)]({DOCS_URL}arquitetura/)
+- [O agente, ferramentas e guardrails]({DOCS_URL}agente/)
+- [O problema e as métricas de sucesso]({DOCS_URL}problema/)
+- [Avaliação do modelo e do sistema]({DOCS_URL}avaliacao/)
+- [Documentação completa]({DOCS_URL})
+"""
+    )
+    st.info(f"Documentação completa: {DOCS_URL}")
+
+
 def main():
     st.title(":material/trending_down: ChurnPredictor")
     st.caption(
@@ -219,10 +290,16 @@ def main():
         st.sidebar.caption(f"API: {badge}")
     else:
         st.sidebar.caption("API: :material/cancel: offline")
+    st.sidebar.caption(f":material/menu_book: [Documentação]({DOCS_URL})")
 
     customer = customer_form()
-    t1, t2, t3 = st.tabs(
-        [":material/analytics: Análise", ":material/chat: Chat de retenção", ":material/monitoring: Monitoramento"]
+    t1, t2, t3, t4 = st.tabs(
+        [
+            ":material/analytics: Análise",
+            ":material/chat: Chat de retenção",
+            ":material/monitoring: Monitoramento",
+            ":material/help: Ajuda",
+        ]
     )
     with t1:
         tab_analise(customer)
@@ -230,6 +307,8 @@ def main():
         tab_chat(customer)
     with t3:
         tab_monitor()
+    with t4:
+        tab_ajuda()
 
 
 if __name__ == "__main__":

@@ -22,6 +22,12 @@ Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (ngi
 
 ## Opção A — Build a partir do GitHub (recomendado)
 
+!!! info "EasyPanel usa o `Dockerfile`, não o `docker-compose`"
+    Cada serviço no EasyPanel constrói **um `Dockerfile` → um container**; ele **ignora** o
+    `docker-compose.yml` (que serve só para rodar tudo localmente com um comando). Isso funciona aqui
+    porque o nosso `Dockerfile` é **auto-contido**: um único container sobe API + Streamlit + nginx
+    (via `start.sh`) e expõe tudo na porta **7860**. Ou seja, não há vários serviços para orquestrar.
+
 ### 1. Criar o projeto e o serviço
 1. No EasyPanel: **Create Project** → dê um nome (ex.: `churn`).
 2. Dentro do projeto: **+ Service** → **App**.

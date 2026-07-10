@@ -4,11 +4,12 @@
 
 | | |
 |---|---|
-| **Aplicação (link):** | _preencher após deploy_ (ex.: `https://<seu-space>.hf.space/`) |
-| **API (link):** | _mesmo link_ `/api/docs` · `/api/predict` · `/api/health` |
-| **Repositório:** | _preencher_ (ex.: `https://github.com/lcsgborges/...`) |
+| **Aplicação (link):** | https://churn.lcsgborges.cloud/ |
+| **API (link):** | https://churn.lcsgborges.cloud/api/docs · `/api/predict` · `/api/health` |
+| **Documentação:** | https://lcsgborges.github.io/churn-predictor/ |
+| **Repositório:** | https://github.com/lcsgborges/churn-predictor |
 | **Vídeo demo:** | _preencher_ |
-| **Integrantes:** | Lucas Guimarães _(ajustar conforme a equipe)_ |
+| **Integrantes:** | Lucas Guimarães |
 
 ---
 
