@@ -14,7 +14,7 @@ Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (ngi
 - [x] VPS com **EasyPanel** instalado e acessível.
 - [x] Um **domínio** (ou subdomínio) com registro **A** apontando para o **IP da VPS**
       (ex.: `churn.seudominio.com` → `A` → IP).
-- [x] Repositório no **GitHub** com a pasta `1-1_lucas_guimaraes/` (push feito).
+- [x] Repositório no **GitHub** (push feito).
 - [x] Sua **`OPENAI_API_KEY`** (opcional — sem ela o sistema roda em modo *fallback*).
 - [x] Recomendado: VPS com **≥ 2 GB de RAM** (o build instala scikit-learn/shap/streamlit).
 
@@ -33,12 +33,11 @@ Na aba **Source**, escolha **GitHub** (conecte a conta/repo) ou **Git** (URL pú
 |---|---|
 | Repository / URL | seu repositório |
 | Branch / Ref | `main` (ou `feat/lucas-guimaraes`) |
-| **Build Path** | `/1-1_lucas_guimaraes` — **essencial** |
+| **Build Path** | `/` (raiz do repositório) |
 
-!!! warning "Build Path é obrigatório"
-    O `Dockerfile` faz `COPY . .` esperando a pasta `1-1_lucas_guimaraes` como contexto de build.
-    Se deixar o Build Path na raiz do repositório, o `python -m ml.train` do build falha. Aponte para
-    `/1-1_lucas_guimaraes`.
+!!! note "Build Path"
+    O `Dockerfile` fica na **raiz do repositório** e faz `COPY . .`. Deixe o Build Path como `/`
+    (é o padrão) — o `python -m ml.train` roda no build a partir daí.
 
 ### 3. Build
 Na aba **Build**, selecione **Dockerfile** (o EasyPanel detecta o `Dockerfile` automaticamente na
@@ -84,7 +83,7 @@ curl https://churn.seudominio.com/api/health
 
 1. Faça o build e o push da imagem para um registry (na sua máquina ou via CI):
    ```bash
-   cd 1-1_lucas_guimaraes
+   cd churn-predictor
    docker build -t ghcr.io/SEU_USUARIO/churn-agent:latest .
    docker push ghcr.io/SEU_USUARIO/churn-agent:latest
    ```
@@ -117,7 +116,7 @@ Além da app, você pode servir **esta documentação** na VPS como um serviço 
 `docs.seudominio.com`). Já existe um `Dockerfile.docs` que builda o MkDocs e serve o estático com nginx.
 
 1. No EasyPanel: **+ Service → App**.
-2. **Source:** mesmo repositório, **Build Path = `/1-1_lucas_guimaraes`**.
+2. **Source:** mesmo repositório, **Build Path = `/`** (raiz).
 3. **Build:** Dockerfile → informe o caminho **`Dockerfile.docs`**.
 4. **Domains:** adicione `docs.seudominio.com` na **porta `80`**, com HTTPS.
 5. **Deploy.** Ative o **webhook** do GitHub em *Source* para redeploy automático a cada push.
@@ -130,7 +129,7 @@ Além da app, você pode servir **esta documentação** na VPS como um serviço 
 
 | Sintoma | Causa provável | Correção |
 |---|---|---|
-| Build falha em `python -m ml.train` | Build Path na raiz do repo | Defina Build Path = `/1-1_lucas_guimaraes` |
+| Build falha em `python -m ml.train` | Build Path apontando para subpasta errada | Defina Build Path = `/` (raiz do repo) |
 | `502 Bad Gateway` no domínio | Porta errada no domínio | Use a porta **7860** |
 | App responde mas sempre em *fallback* | `OPENAI_API_KEY` ausente/inválida | Configure a env e faça redeploy |
 | Build sem memória / muito lento | VPS com pouca RAM | Use a **Opção B** (imagem pronta) |

@@ -2,26 +2,29 @@
 
 ## Visão geral
 
-```
-                        Link público único — nginx (porta 7860)
-                 ┌───────────────────────────────────────────────┐
-   Navegador ───▶│  /        → Streamlit  (produto :8501)         │
-   Sistemas  ───▶│  /api/*   → FastAPI    (API :8000)             │
-                 └───────────────────┬───────────────────────────┘
-                                     ▼
-                       ┌─────────────────────────────┐
-                       │  Agente (agent/agent.py)     │
-                       │  1. Guardrails de ENTRADA    │  perfil + mensagem
-                       │  2. predict_churn (tool) ────┼──▶ Pipeline sklearn (.pkl)
-                       │        └─ SHAP (fatores)     │      Gradient Boosting
-                       │  3. Raciocínio LLM (OpenAI)  │
-                       │  4. Guardrails de SAÍDA      │
-                       │  5. FALLBACK determinístico  │
-                       └───────────────┬─────────────┘
-                                       ▼
-                Resposta: probabilidade + explicação + ação de retenção
-                                       ▼
-                Monitoring (JSONL): latência · custo · fallback · guardrails
+```mermaid
+flowchart TD
+    Nav[Navegador / Sistemas] --> NGX["nginx — link público único (:7860)"]
+
+    subgraph roteamento[Roteamento]
+        NGX -->|"/"| ST[Streamlit — produto :8501]
+        NGX -->|"/api/*"| API[FastAPI — API :8000]
+    end
+
+    ST --> AG
+    API --> AG
+
+    subgraph agente["Agente (agent/agent.py)"]
+        AG[1. Guardrails de ENTRADA] --> TOOL[2. predict_churn tool]
+        TOOL --> LLM[3. Raciocínio LLM OpenAI]
+        LLM --> OUT[4. Guardrails de SAÍDA]
+        OUT --> FB[5. Fallback determinístico]
+    end
+
+    TOOL -.->|SHAP fatores| ML["Pipeline sklearn .pkl — Gradient Boosting"]
+
+    FB --> RESP[Resposta: probabilidade + explicação + ação de retenção]
+    RESP --> MON["Monitoring JSONL: latência · custo · fallback · guardrails"]
 ```
 
 ## Um container, um link

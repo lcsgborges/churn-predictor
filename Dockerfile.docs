@@ -1,5 +1,5 @@
 # Imagem só da documentação (MkDocs) — para servir a doc na VPS (EasyPanel) como
-# um serviço separado, ex.: docs.seudominio.com. Build context = 1-1_lucas_guimaraes.
+# um serviço separado, ex.: docs.seudominio.com. Build context = raiz do repositório.
 FROM python:3.12-slim AS build
 WORKDIR /docs
 COPY requirements-docs.txt .

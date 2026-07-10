@@ -2,6 +2,8 @@ site_name: Agente de Previsão de Churn
 site_description: Trilha 1.1 — agente de IA que prevê churn, explica e sugere ação de retenção.
 site_author: Lucas Guimarães
 site_url: https://lcsgborges.github.io/churn-predictor/
+repo_url: https://github.com/lcsgborges/churn-predictor
+repo_name: lcsgborges/churn-predictor
 docs_dir: docs
 
 theme:
@@ -27,7 +29,6 @@ theme:
     - navigation.tracking
     - navigation.sections
     - content.code.copy
-    - toc.integrate
 
 nav:
   - Início: index.md
@@ -41,6 +42,11 @@ nav:
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.details
   - pymdownx.highlight
   - pymdownx.superfences:
