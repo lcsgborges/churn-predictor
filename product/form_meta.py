@@ -27,31 +27,63 @@ VALUE_LABELS = {
 }
 
 
-def _select(name: str, label: str, options: list[str]) -> dict:
-    return {
+def _select(name: str, label: str, options: list[str], help_text: str | None = None) -> dict:
+    field = {
         "name": name,
         "label": label,
         "kind": "select",
         "options": [{"value": o, "label": VALUE_LABELS.get(o, o)} for o in options],
     }
+    if help_text:
+        field["help"] = help_text
+    return field
 
 
 # Campos principais (sempre visíveis), na ordem de exibição.
 MAIN_FIELDS = [
     _select("gender", "Gênero", ["Female", "Male"]),
-    {"name": "SeniorCitizen", "label": "Idoso (65+)", "kind": "bool"},
-    _select("Partner", "Tem parceiro(a)", ["Yes", "No"]),
-    _select("Dependents", "Tem dependentes", ["Yes", "No"]),
-    {"name": "tenure", "label": "Tempo de casa (meses)", "kind": "int", "min": 0, "max": 72, "step": 1},
-    _select("Contract", "Contrato", ["Month-to-month", "One year", "Two year"]),
-    _select("InternetService", "Internet", ["Fiber optic", "DSL", "No"]),
+    {"name": "SeniorCitizen", "label": "Cliente com 65 anos ou mais", "kind": "bool"},
+    _select("Partner", "Possui parceiro(a)", ["Yes", "No"]),
+    _select("Dependents", "Possui dependentes", ["Yes", "No"]),
+    {
+        "name": "tenure",
+        "label": "Tempo como cliente (meses)",
+        "help": "Há quantos meses o cliente utiliza os serviços da empresa.",
+        "kind": "int",
+        "min": 0,
+        "max": 72,
+        "step": 1,
+    },
+    _select(
+        "Contract",
+        "Duração do contrato",
+        ["Month-to-month", "One year", "Two year"],
+        "Período de permanência previsto no contrato atual.",
+    ),
+    _select("InternetService", "Tipo de internet", ["Fiber optic", "DSL", "No"]),
     _select(
         "PaymentMethod",
-        "Pagamento",
+        "Forma de pagamento",
         ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"],
     ),
-    {"name": "MonthlyCharges", "label": "Cobrança mensal", "kind": "float", "min": 0, "max": 200, "step": 0.5},
-    {"name": "TotalCharges", "label": "Cobrança total", "kind": "float", "min": 0, "max": 9000, "step": 10},
+    {
+        "name": "MonthlyCharges",
+        "label": "Valor cobrado por mês",
+        "help": "Valor atual da mensalidade, incluindo os serviços contratados.",
+        "kind": "float",
+        "min": 0,
+        "max": 200,
+        "step": 0.5,
+    },
+    {
+        "name": "TotalCharges",
+        "label": "Total já cobrado no contrato",
+        "help": "Soma aproximada de tudo que já foi cobrado desde o início do relacionamento.",
+        "kind": "float",
+        "min": 0,
+        "max": 9000,
+        "step": 10,
+    },
 ]
 
 # Campos avançados (dentro de um "accordion").

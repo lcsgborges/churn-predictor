@@ -25,7 +25,10 @@
     a { color: var(--brand); }
     header { display: flex; align-items: center; gap: 12px; padding: 14px 22px;
       background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
-    header h1 { font-size: 18px; margin: 0; letter-spacing: -.02em; }
+    .brand-icon { width: 32px; height: 32px; flex: 0 0 32px; color: var(--brand);
+      fill: none; stroke: currentColor; stroke-width: 1.8; }
+    .brand-copy { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+    header h1 { font-size: 20px; margin: 0; letter-spacing: -.02em; white-space: nowrap; }
     header .sub { color: var(--muted); font-size: 13px; }
     header .spacer { flex: 1; }
     .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
@@ -42,6 +45,7 @@
     .profile-toggle { display: none; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 13px; margin-bottom: 4px; color: var(--muted); }
+    .field-help { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.35; }
     .field select, .field input[type=number] { width: 100%; padding: 8px 10px; border-radius: 8px;
       border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14px; }
     .checkline { display: flex; align-items: center; gap: 8px; }
@@ -96,7 +100,8 @@
     .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border);
       border-top-color: var(--brand); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; }
     @keyframes sp { to { transform: rotate(360deg); } }
-    svg.icon { width: 16px; height: 16px; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; }
+    svg.icon:not(.brand-icon) { width: 16px; height: 16px; vertical-align: -3px;
+      fill: none; stroke: currentColor; stroke-width: 2; }
     @media (max-width: 860px) {
       .layout { grid-template-columns: minmax(0, 1fr); padding: 14px; gap: 14px; }
       aside { position: static; }
@@ -107,12 +112,12 @@
     }
     @media (max-width: 620px) {
       header { position: static; padding: 12px 14px; flex-wrap: wrap; gap: 8px 10px; }
-      header > svg.icon { flex: 0 0 auto; }
-      header > div { flex: 1; min-width: 0; }
+      .brand-icon { width: 30px; height: 30px; flex-basis: 30px; }
+      .brand-copy { flex: 1; flex-direction: column; align-items: flex-start; gap: 0; }
       header .sub { font-size: 12px; }
       header .spacer { display: none; }
       header .badge { min-height: 32px; }
-      header #apiBadge { margin-left: 26px; }
+      header #apiBadge { margin-left: 40px; }
       .layout { padding: 10px; gap: 10px; }
       aside .card, main .card { padding: 14px; border-radius: 10px; }
       .presets { display: grid; grid-template-columns: 1fr 1fr; }
@@ -134,7 +139,6 @@
       .scroll { margin-right: -4px; -webkit-overflow-scrolling: touch; }
     }
     @media (max-width: 380px) {
-      header .sub { display: none; }
       header #apiBadge { margin-left: 0; }
       .metrics { grid-template-columns: 1fr; }
       .chat-input { flex-direction: column; }
@@ -144,10 +148,10 @@
 </head>
 <body>
   <header>
-    <svg class="icon" viewBox="0 0 24 24" style="color:var(--brand)"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
-    <div>
+    <svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+    <div class="brand-copy">
       <h1>ChurnPredictor</h1>
-      <div class="sub">Agente de previsão de churn — risco, explicação e ação de retenção</div>
+      <div class="sub">Previsão de churn com explicação e ação de retenção</div>
     </div>
     <div class="spacer"></div>
     <span id="apiBadge" class="badge"><span class="dot"></span> API</span>
@@ -166,7 +170,7 @@
                   aria-controls="profileBody">Recolher</button>
         </div>
         <div class="profile-body" id="profileBody">
-          <p class="muted preset-help"><b>Exemplos de preenchimento:</b> use um perfil fictício ou edite os campos abaixo.</p>
+          <p class="muted preset-help"><b>Exemplos de preenchimento:</b> use um perfil fictício ou edite os campos abaixo. Os valores monetários seguem a unidade do conjunto de dados e não representam uma moeda específica.</p>
           <div class="presets">
             <button class="btn" type="button" onclick="loadPreset('alto')">Exemplo: alto risco</button>
             <button class="btn" type="button" onclick="loadPreset('baixo')">Exemplo: baixo risco</button>
@@ -192,6 +196,7 @@
                 <input type="number" id="{{ f.name }}" min="{{ f.min }}" max="{{ f.max }}"
                        step="{{ f.step }}" value="{{ d[f.name] }}" />
               {% endif %}
+              {% if f.help %}<small class="field-help">{{ f.help }}</small>{% endif %}
             </div>
           {% endfor %}
           <details class="adv">
@@ -205,6 +210,7 @@
                       <option value="{{ o.value }}" {% if o.value == d[f.name] %}selected{% endif %}>{{ o.label }}</option>
                     {% endfor %}
                   </select>
+                  {% if f.help %}<small class="field-help">{{ f.help }}</small>{% endif %}
                 </div>
               {% endfor %}
             </div>
@@ -219,7 +225,7 @@
         <div class="tabs">
           <button class="tab active" data-tab="analise">Análise</button>
           <button class="tab" data-tab="chat">Chat de retenção</button>
-          <button class="tab" data-tab="monitor">Monitoramento</button>
+          <button class="tab" data-tab="monitor">Indicadores</button>
           <button class="tab" data-tab="ajuda">Ajuda</button>
         </div>
 
@@ -253,12 +259,12 @@
             <li>Abra o <b>perfil do cliente</b>, preencha os campos ou carregue um dos <b>perfis fictícios de exemplo</b> (alto ou baixo risco).</li>
             <li>Na aba <b>Análise</b>, clique em <b>Analisar cliente</b> para ver a probabilidade de churn, os fatores (verde reduz, vermelho aumenta) e a ação recomendada.</li>
             <li>Use o <b>Chat de retenção</b> para perguntar sobre o cliente carregado.</li>
-            <li>Acompanhe latência, custo e fallback em <b>Monitoramento</b>.</li>
+            <li>Acompanhe tempo de resposta, custo estimado e uso do modo de contingência em <b>Indicadores</b>.</li>
           </ol>
           <h3>Entenda o funcionamento</h3>
           <ul class="help">
             <li><a href="{{ docs_url }}arquitetura/" target="_blank" rel="noopener">Como o sistema é montado</a></li>
-            <li><a href="{{ docs_url }}agente/" target="_blank" rel="noopener">O agente e os guardrails</a></li>
+            <li><a href="{{ docs_url }}agente/" target="_blank" rel="noopener">Como a IA e as proteções funcionam</a></li>
             <li><a href="{{ docs_url }}avaliacao/" target="_blank" rel="noopener">Avaliação do modelo</a></li>
             <li><a href="{{ docs_url }}" target="_blank" rel="noopener">Documentação completa</a></li>
           </ul>
@@ -343,7 +349,7 @@
         return `<div class="factor"><div title="${f.label}">${f.label}</div>
           <div class="ftrack"><div class="fmid"></div><div class="fbar" style="${style}"></div></div></div>`;
       }).join('');
-      return `<div style="margin-top:6px"><div class="muted" style="margin-bottom:6px">Fatores (SHAP) — <span style="color:var(--red)">vermelho aumenta</span>, <span style="color:var(--green)">verde reduz</span></div>${rows}</div>`;
+      return `<div style="margin-top:6px"><div class="muted" style="margin-bottom:6px">O que mais influenciou o resultado — <span style="color:var(--red)">vermelho aumenta o risco</span>, <span style="color:var(--green)">verde reduz o risco</span></div>${rows}</div>`;
     }
 
     // ---- analyze ----
@@ -367,8 +373,8 @@
       const pct = d.churn_probability_pct || 0;
       const meta = d.meta || {};
       const tag = meta.fallback
-        ? '<span class="chip fb">modo contingência (fallback)</span>'
-        : '<span class="chip llm">agente LLM</span>';
+        ? '<span class="chip fb">explicação automática de contingência</span>'
+        : '<span class="chip llm">explicação gerada por IA</span>';
       const answer = (d.answer || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
       document.getElementById('result').innerHTML = `
@@ -415,8 +421,8 @@
           ['Latência média', (s.avg_latency_ms ?? 0) + ' ms'],
           ['Latência p95', (s.p95_latency_ms ?? 0) + ' ms'],
           ['Custo total', '$' + (s.total_cost_usd ?? 0).toFixed(4)],
-          ['Taxa fallback', Math.round((s.fallback_rate ?? 0) * 100) + '%'],
-          ['Bloqueio guardrail', Math.round((s.guardrail_block_rate ?? 0) * 100) + '%'],
+          ['Uso da contingência', Math.round((s.fallback_rate ?? 0) * 100) + '%'],
+          ['Pedidos bloqueados por segurança', Math.round((s.guardrail_block_rate ?? 0) * 100) + '%'],
         ].map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
         let table = '';
         const rec = d.recent || [];
