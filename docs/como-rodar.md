@@ -1,5 +1,13 @@
 # Como rodar
 
+## Pré-requisitos
+
+- **Docker + Docker Compose** para o caminho recomendado; ou
+- **Python 3.12** para executar sem Docker.
+
+A chave `OPENAI_API_KEY` é opcional. Sem ela, a aplicação continua fazendo previsões e usa o
+fallback determinístico para explicar o resultado.
+
 ## Com Docker (recomendado — um comando)
 
 ```bash

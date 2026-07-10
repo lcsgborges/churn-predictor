@@ -18,7 +18,9 @@ flowchart TD
         AG[1. Guardrails de ENTRADA] --> TOOL[2. predict_churn tool]
         TOOL --> LLM[3. Raciocínio LLM OpenAI]
         LLM --> OUT[4. Guardrails de SAÍDA]
-        OUT --> FB[5. Fallback determinístico]
+        OUT -->|saída coerente| RESP
+        LLM -.->|indisponível / erro| FB[5. Fallback determinístico]
+        OUT -.->|saída incoerente| FB
     end
 
     TOOL -.->|SHAP fatores| ML["Pipeline sklearn .pkl — Gradient Boosting"]
@@ -94,10 +96,19 @@ a cada push/PR:
 
 ```mermaid
 flowchart LR
-    L[Lint · ruff] --> T[Treino do modelo] --> P[Testes · pytest] --> D[Build da imagem Docker]
+    PUSH[Push / pull request] --> TEST
+    PUSH --> DOCS
+
+    subgraph TEST[Qualidade do código]
+        L[Lint · ruff] --> T[Treino do modelo] --> P[21 testes · pytest]
+    end
+
+    P --> D[Build da imagem Docker]
+    DOCS[Build MkDocs strict] --> OK[Documentação válida]
 ```
 
-Qualquer etapa que falhar quebra o merge. A documentação tem um workflow próprio
+Os jobs de código e documentação podem rodar em paralelo; a imagem Docker só é construída depois que
+lint, treino e testes passam. Qualquer etapa que falhar quebra o merge. A documentação tem um workflow próprio
 ([`docs.yml`](https://github.com/lcsgborges/churn-predictor/blob/main/.github/workflows/docs.yml)) que
 publica este site no **GitHub Pages** a cada push na `main`.
 

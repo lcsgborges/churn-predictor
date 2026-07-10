@@ -29,4 +29,5 @@ Há risco de a política de retenção favorecer sistematicamente um grupo.
 ## Limitações do dado
 
 Dataset sintético/EUA (IBM Sample Data): padrões podem **não generalizar** para o mercado brasileiro.
-Ver o [Data Card](https://github.com/) no repositório (`data/DATA_CARD.md`).
+Ver o [Data Card](https://github.com/lcsgborges/churn-predictor/blob/main/data/DATA_CARD.md) no
+repositório (`data/DATA_CARD.md`).

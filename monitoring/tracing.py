@@ -1,8 +1,9 @@
 """Monitoramento: registro de traces em JSONL e agregação de métricas.
 
-Cada interação com o agente vira uma linha JSON com: entrada (resumida), ferramentas
-acionadas, latência ponta-a-ponta, tokens/custo do LLM, se o fallback foi acionado e se
-algum guardrail bloqueou. A aba de Monitoramento do produto lê este arquivo.
+Cada interação com o agente vira uma linha JSON com: identificador do trace, ferramentas
+acionadas, latência ponta-a-ponta, custo estimado do LLM, probabilidade de churn, uso de
+fallback e bloqueio por guardrail. O perfil do cliente não é persistido. A aba de
+Monitoramento do produto lê este arquivo.
 """
 from __future__ import annotations
 

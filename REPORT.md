@@ -4,11 +4,11 @@
 
 | | |
 |---|---|
-| **Aplicação (link):** | https://churn.lcsgborges.cloud/ |
-| **API (link):** | https://churn.lcsgborges.cloud/api/docs · `/api/predict` · `/api/health` |
-| **Documentação:** | https://lcsgborges.github.io/churn-predictor/ |
-| **Repositório:** | https://github.com/lcsgborges/churn-predictor |
-| **Vídeo demo:** | _preencher_ |
+| **Aplicação (link):** | <https://churn.lcsgborges.cloud/> |
+| **API (link):** | <https://churn.lcsgborges.cloud/api/docs> · `/api/predict` · `/api/health` |
+| **Documentação:** | <https://lcsgborges.github.io/churn-predictor/> |
+| **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
+| **Vídeo demo:** | _Link a adicionar após a publicação_ |
 | **Integrante:** | Lucas Guimarães Borges — 222015159 |
 
 ---
@@ -41,28 +41,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 ### Diagrama de arquitetura
 
-```
-                   Link público único — FastAPI/uvicorn
-                 ┌───────────────────────────────────────────────┐
-   Navegador ───▶│  GET /    → Produto (UI HTML/JS, templates)    │
-   Sistemas  ───▶│  /api/*   → API JSON (predict, chat, health…)  │
-                 └───────────────────┬───────────────────────────┘
-                          UI chama /api/* via fetch
-                                     ▼
-                       ┌─────────────────────────────┐
-                       │  Agente (agent/agent.py)     │
-                       │  1. Guardrails de ENTRADA    │  perfil + mensagem
-                       │  2. predict_churn (tool) ────┼──▶ Pipeline sklearn (.pkl)
-                       │        └─ SHAP (fatores)     │      Gradient Boosting
-                       │  3. Raciocínio LLM (OpenAI)  │
-                       │  4. Guardrails de SAÍDA      │
-                       │  5. FALLBACK determinístico  │
-                       └───────────────┬─────────────┘
-                                       ▼
-                Resposta: probabilidade + explicação + ação de retenção
-                                       ▼
-                Monitoring (JSONL): latência · custo · fallback · guardrails
-```
+![Arquitetura completa do ChurnPredictor: produto e API conectados ao agente, ao modelo de churn, aos guardrails, ao fallback, ao monitoramento e ao CI/CD](docs/assets/arquitetura.png)
 
 > Um **único processo** (uvicorn) serve a UI e a API no mesmo endereço.
 
@@ -157,7 +136,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 - **Reprodutível:** `python -m ml.train` regenera o modelo e o `models/metrics.json` com as duas abordagens.
 
 ### Avaliação do agente / sistema
-- **Casos extremos testados** (`tests/`, 20 testes): entrada inválida (422), categoria inexistente,
+- **Casos extremos testados** (`tests/`, 21 testes): entrada inválida (422), categoria inexistente,
   numérico fora de faixa, **jailbreak** e **fora de escopo** bloqueados, saída incoerente → fallback,
   fallback sem chave de LLM.
 - **Latência:** modo fallback ~0,2–0,3 s; com LLM, dominada pela chamada à OpenAI (medida por trace).
@@ -167,14 +146,15 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 ### UX
 - **Claro:** resposta padronizada *Risco → Por quê → Ação*, com medidor visual e gráfico de fatores.
 - **Rápido:** perfis fictícios de exemplo (alto/baixo risco) para demonstração imediata.
-- **Quando erra/tem incerteza:** faixa de risco (alto/médio/baixo) comunica confiança; no modo contingência,
-  o sistema **avisa** que o LLM está indisponível mas que a previsão do modelo é válida.
+- **Quando há contingência:** a faixa alto/médio/baixo comunica o nível de risco; no modo contingência,
+  o sistema avisa que a explicação foi gerada pelo fallback. A faixa não representa um intervalo de
+  confiança estatística.
 
 ---
 
 ## 5. Demonstração
 
-_Vídeo: preencher o link._ Roteiro sugerido: (1) carregar o perfil fictício "Exemplo: alto risco" → analisar → mostrar
+_Vídeo: link a adicionar após a publicação._ Roteiro sugerido: (1) carregar o perfil fictício "Exemplo: alto risco" → analisar → mostrar
 probabilidade, fatores SHAP e ação; (2) usar o chat de retenção; (3) tentar um jailbreak → guardrail;
 (4) chamar a API pública via `curl /api/predict`; (5) abrir a aba Monitoramento.
 

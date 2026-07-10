@@ -28,6 +28,9 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
     - content.code.copy
 
 nav:
@@ -55,6 +58,8 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.details
   - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

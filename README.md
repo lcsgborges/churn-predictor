@@ -24,18 +24,17 @@ ChurnPredictor recebe o perfil de um cliente de telecom, raciocina sobre o **ris
 
 ## Arquitetura (resumo)
 
-```mermaid
-flowchart LR
-    U[Usuário] --> APP
-    S[Sistemas externos] --> APP
-    APP["FastAPI · uvicorn"] -->|"GET /"| UI[Produto · UI HTML/JS]
-    APP -->|"/api/*"| API[API JSON]
-    UI -. fetch .-> API
-    API --> AG[Agente · LLM + ferramentas]
-    AG --> ML[Modelo ML + SHAP]
-```
+![Arquitetura completa do ChurnPredictor: interface e API conectadas ao agente, ao modelo de churn, aos guardrails, ao fallback, ao monitoramento e ao CI/CD](docs/assets/arquitetura.png)
 
 Um único processo (FastAPI/uvicorn) serve **produto e API** no mesmo link.
+Veja os detalhes e os diagramas de fluxo na [documentação de arquitetura](docs/arquitetura.md).
+
+## Pré-requisitos
+
+- Para a execução recomendada: **Docker** com o plugin **Docker Compose**.
+- Para desenvolvimento sem Docker: **Python 3.12**.
+- `OPENAI_API_KEY` é opcional: sem a chave, o modelo de churn e as explicações continuam funcionando
+  em modo de contingência, sem a resposta gerada pelo LLM.
 
 ## Rodar localmente (um comando)
 
@@ -47,6 +46,23 @@ docker compose up --build
 - Produto: <http://localhost:7860/>
 - API (docs): <http://localhost:7860/api/docs>
 - Health: <http://localhost:7860/api/health>
+
+### Modos de operação
+
+| Configuração | Comportamento |
+|---|---|
+| Com `OPENAI_API_KEY` | Modelo ML calcula o risco; o LLM explica e recomenda uma ação. |
+| Sem `OPENAI_API_KEY` | Modelo ML calcula o mesmo risco; um template determinístico produz a explicação e a ação. |
+
+## API
+
+| Método | Rota | Finalidade |
+|---|---|---|
+| `GET` | `/api/health` | Verifica se o serviço e o modelo estão prontos. |
+| `POST` | `/api/predict` | Analisa um perfil e devolve risco, fatores e recomendação. |
+| `POST` | `/api/chat` | Responde a uma pergunta de retenção sobre um perfil. |
+| `GET` | `/api/metrics` | Resume latência, custo, fallback e guardrails. |
+| `GET` | `/api/docs` | Abre a documentação interativa da API. |
 
 Exemplo de chamada à API:
 

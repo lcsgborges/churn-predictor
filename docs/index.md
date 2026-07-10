@@ -21,7 +21,7 @@ sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação +
 
 </div>
 
-## Cabeçalho
+## Links do projeto
 
 | | |
 |---|---|
@@ -42,3 +42,13 @@ responde algo como:
     **Ação recomendada:** oferecer migração para contrato anual com desconto; acionar o time de relacionamento.
 
 Continue por [Problema](problema.md) → [Arquitetura](arquitetura.md) → [Como rodar](como-rodar.md).
+
+## Encontre rapidamente
+
+| Se você quer… | Consulte |
+|---|---|
+| Entender as decisões técnicas | [Arquitetura](arquitetura.md) e [Agente e guardrails](agente.md) |
+| Interpretar PR-AUC, SHAP, LLM e outras siglas | [Glossário](glossario.md) |
+| Conferir métricas e cobertura de testes | [Avaliação](avaliacao.md) |
+| Executar ou publicar a aplicação | [Como rodar](como-rodar.md) e [Deploy](deploy.md) |
+| Entender riscos, vieses e limitações | [Impactos e ética](etica.md) |

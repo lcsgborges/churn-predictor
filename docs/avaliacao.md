@@ -20,7 +20,7 @@ Se essas métricas forem novas para você, consulte as explicações de
 
 ## Avaliação do sistema
 
-20 testes automatizados (`tests/`) cobrem:
+21 testes automatizados (`tests/`) cobrem:
 
 - **Modelo:** probabilidade válida, alto risco > baixo risco, SHAP retorna fatores, `Contract` no topo.
 - **Guardrails:** categoria inválida, numérico fora de faixa, jailbreak e fora de escopo bloqueados,
@@ -28,7 +28,7 @@ Se essas métricas forem novas para você, consulte as explicações de
 - **API:** health, `/predict` (200 + estrutura), schema inválido (422), chat com jailbreak bloqueado, `/metrics`.
 
 ```bash
-pytest -q      # 20 passed
+pytest -q      # 21 passed
 ```
 
 ## Latência, custo e monitoramento
@@ -44,5 +44,6 @@ Cada interação vira um **trace** JSONL (`monitoring/tracing.py`), agregado em 
 
 - **Claro:** resposta padronizada *Risco → Por quê → Ação*, com medidor e gráfico de fatores.
 - **Rápido:** perfis fictícios de exemplo (alto/baixo risco) para demonstração imediata.
-- **Quando erra/tem incerteza:** a faixa de risco comunica confiança; no modo contingência, o sistema
-  **avisa** que o LLM está indisponível mas que a previsão do modelo é válida.
+- **Quando há contingência:** a faixa alto/médio/baixo comunica o nível de risco; se o LLM estiver
+  indisponível, o sistema avisa que a explicação foi gerada pelo fallback. A faixa não deve ser
+  interpretada como intervalo de confiança estatística.

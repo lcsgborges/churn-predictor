@@ -20,12 +20,38 @@
 
 ## Fluxo de uma interação
 
-1. **Guardrails de entrada** (perfil + mensagem).
-2. **Predição determinística** (modelo ML) — base do raciocínio e do fallback.
-3. **Raciocínio do LLM** via *function calling*; o LLM chama `predict_churn` e recebe o resultado já calculado.
-4. **Guardrail de saída** (coerência / anti-alucinação).
-5. **Fallback** determinístico se o LLM falhar ou a saída for incoerente.
-6. **Trace** de monitoramento.
+```mermaid
+sequenceDiagram
+    actor U as Usuário
+    participant API
+    participant G as Guardrails
+    participant ML as Modelo + SHAP
+    participant LLM
+    participant M as Monitoramento
+
+    U->>API: Perfil e pergunta opcional
+    API->>G: Validar entrada
+    alt Entrada bloqueada
+        G-->>API: Mensagem de reorientação
+    else Entrada válida
+        API->>ML: predict_churn
+        ML-->>API: Probabilidade e fatores
+        opt LLM disponível
+            API->>LLM: Perfil + resultado da ferramenta
+            LLM-->>G: Explicação e ação
+        end
+        alt LLM ausente, falhou ou saída incoerente
+            API->>API: Montar fallback determinístico
+        else Saída coerente
+            G-->>API: Resposta do LLM
+        end
+    end
+    API->>M: Registrar trace
+    API-->>U: Resposta final
+```
+
+O modelo é executado antes do LLM e sua saída é reutilizada no *function calling*. Assim, a
+probabilidade tem uma única fonte e não é recalculada durante a conversa.
 
 ## Guardrails
 
