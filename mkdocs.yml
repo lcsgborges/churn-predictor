@@ -32,13 +32,18 @@ theme:
 
 nav:
   - Início: index.md
-  - Problema: problema.md
-  - Arquitetura: arquitetura.md
-  - Como rodar: como-rodar.md
-  - Deploy na VPS (EasyPanel): deploy.md
-  - Agente e guardrails: agente.md
-  - Avaliação: avaliacao.md
-  - Impactos e ética: etica.md
+  - Relatório:
+      - Definição do problema: problema.md
+      - Como o sistema é montado: arquitetura.md
+      - Descrição do agente: agente.md
+      - Avaliação do sistema: avaliacao.md
+      - Demonstração: demonstracao.md
+      - Reflexão: reflexao.md
+      - Impactos e ética: etica.md
+      - Referências: referencias.md
+  - Guias:
+      - Como rodar: como-rodar.md
+      - Deploy na VPS (EasyPanel): deploy.md
 
 markdown_extensions:
   - admonition

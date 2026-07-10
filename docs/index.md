@@ -21,12 +21,15 @@ sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação +
 
 </div>
 
-## Links
+## Cabeçalho
 
-- **Aplicação:** _preencher após deploy_ (`https://<seu-space>.hf.space/`)
-- **API:** `/api/docs` · `/api/predict` · `/api/health`
-- **Repositório:** _preencher_
-- **Relatório completo:** [`REPORT.md`](https://github.com/) _(no repositório)_
+| | |
+|---|---|
+| **Aplicação (link):** | _preencher após deploy_ (ex.: `https://<seu-space>.hf.space/`) |
+| **API:** | _mesmo link_ · `/api/docs` · `/api/predict` · `/api/health` |
+| **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
+| **Relatório completo:** | [`REPORT.md`](https://github.com/lcsgborges/churn-predictor/blob/main/REPORT.md) |
+| **Integrantes:** | Lucas Guimarães |
 
 ## O que ele faz, em uma frase
 

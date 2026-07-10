@@ -8,6 +8,16 @@
   probabilidade, faixa de risco, limiar, taxa-base e os **fatores** (com direção *aumenta/reduz*).
   É a **única** fonte da probabilidade e das causas — o LLM está **proibido** de inventá-las.
 
+## Dados e contexto
+
+- **Telco Customer Churn** (IBM Sample Data): 7.043 clientes, 21 colunas, alvo `Churn`.
+- **Origem e licença:** dataset público (Kaggle / IBM) — detalhes de origem, licença e vieses no
+  [Data Card](https://github.com/lcsgborges/churn-predictor/blob/main/data/DATA_CARD.md) (`data/DATA_CARD.md`).
+- **Preparo (`ml/preprocess.py`):** limpeza de `TotalCharges`, one-hot das categóricas e escala das numéricas.
+- **Papel do dado:** treina o modelo **e** define o **esquema de inferência** que a API aceita (as mesmas
+  colunas do dataset). O dado não alimenta o LLM diretamente — ele chega ao agente já como resultado da
+  ferramenta `predict_churn`.
+
 ## Fluxo de uma interação
 
 1. **Guardrails de entrada** (perfil + mensagem).
