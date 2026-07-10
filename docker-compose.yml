@@ -1,0 +1,15 @@
+# Sobe todo o sistema com um comando:  docker compose up --build
+# Produto:  http://localhost:7860/
+# API:      http://localhost:7860/api/health  |  /api/docs  |  POST /api/predict
+services:
+  churn-agent:
+    build: .
+    image: churn-agent:latest
+    ports:
+      - "7860:7860"
+    environment:
+      # Passe sua chave da OpenAI aqui (ou via .env). Sem chave => modo fallback.
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-20}
+    restart: unless-stopped
