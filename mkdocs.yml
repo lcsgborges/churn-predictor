@@ -1,0 +1,52 @@
+site_name: Agente de Previsão de Churn
+site_description: Trilha 1.1 — agente de IA que prevê churn, explica e sugere ação de retenção.
+site_author: Lucas Guimarães
+docs_dir: docs
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Modo claro
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - content.code.copy
+    - toc.integrate
+
+nav:
+  - Início: index.md
+  - Problema: problema.md
+  - Arquitetura: arquitetura.md
+  - Como rodar: como-rodar.md
+  - Deploy na VPS (EasyPanel): deploy.md
+  - Agente e guardrails: agente.md
+  - Avaliação: avaliacao.md
+  - Impactos e ética: etica.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - tables
+  - toc:
+      permalink: true
