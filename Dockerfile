@@ -1,5 +1,5 @@
 # Imagem única: API (FastAPI) + Produto (Streamlit) + nginx (reverse proxy).
-# Mesma imagem roda local (docker compose) e no Hugging Face Spaces (porta 7860).
+# Mesma imagem roda local (docker compose) e em produção na VPS/EasyPanel (porta 7860).
 # Build multi-stage: o builder instala dependências e treina o modelo; o runtime
 # recebe só o venv pronto + o app + o modelo, ficando mais enxuto e rápido de subir.
 
@@ -52,7 +52,7 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
 
-# Usuário não-root (uid 1000, exigência do HF Spaces) com HOME gravável.
+# Usuário não-root (uid 1000) com HOME gravável — boa prática de segurança.
 RUN useradd -m -u 1000 appuser \
     && chown -R appuser:appuser /app \
     && chmod +x start.sh

@@ -29,7 +29,7 @@ flowchart TD
 
 ## Um container, um link
 
-O Hugging Face Spaces expõe **uma** porta. Um **nginx** escuta na porta pública (7860) e roteia:
+O deploy expõe **uma** porta pública. Um **nginx** escuta nela (7860) e roteia:
 
 - `/` → **Streamlit** (produto)
 - `/api/*` → **FastAPI** (API pública: `/api/predict`, `/api/health`, `/api/docs`)

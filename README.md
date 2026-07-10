@@ -1,33 +1,37 @@
----
-title: ChurnPredictor
-colorFrom: red
-colorTo: indigo
-sdk: docker
-app_port: 7860
-pinned: false
----
+# ChurnPredictor
 
-# ChurnPredictor — Agente de Previsão de Churn
+**Agente de previsão de churn para telecom** — Trilha 1.1.
 
-Sistema **agente → API → produto** que recebe o perfil de um cliente de telecom,
-raciocina sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação
-+ ação de retenção**. Modelo de ML (Gradient Boosting + SHAP) para o número e os fatores;
-LLM (OpenAI) para o raciocínio em linguagem natural; guardrails e fallback para confiabilidade.
+ChurnPredictor recebe o perfil de um cliente de telecom, raciocina sobre o **risco de cancelamento
+(churn)** e devolve **probabilidade + explicação + ação de retenção**. É um ciclo completo
+*agente → API → produto*:
 
-- **Aplicação (no ar):** <https://churn.lcsgborges.cloud/>
-- **Documentação (MkDocs):** <https://lcsgborges.github.io/churn-predictor/>
-- **Repositório:** <https://github.com/lcsgborges/churn-predictor>
-- **Relatório completo:** [REPORT.md](REPORT.md)
-- **Deploy na VPS (EasyPanel):** [docs/deploy.md](docs/deploy.md)
-- **Data card:** [data/DATA_CARD.md](data/DATA_CARD.md)
+- O **modelo de ML** (Gradient Boosting + SHAP) entrega a probabilidade e os fatores de risco.
+- Um **agente com LLM** (OpenAI) traduz isso em linguagem natural e recomenda a ação de retenção.
+- **Guardrails** (entrada/saída) e um **fallback determinístico** garantem confiabilidade quando o
+  LLM falha, está fora do ar ou responde de forma incoerente.
+
+## Links
+
+| | |
+|---|---|
+| **Aplicação (no ar)** | <https://churn.lcsgborges.cloud/> |
+| **Documentação (MkDocs)** | <https://lcsgborges.github.io/churn-predictor/> |
+| **Repositório** | <https://github.com/lcsgborges/churn-predictor> |
+| **Relatório completo** | [REPORT.md](REPORT.md) |
+| **Deploy na VPS (EasyPanel)** | [docs/deploy.md](docs/deploy.md) |
+| **Data card** | [data/DATA_CARD.md](data/DATA_CARD.md) |
 
 ## Arquitetura (resumo)
 
-```
-Usuário → Streamlit (/) ─┐
-                          ├─ nginx (:7860) ─┬─ /      → Streamlit (produto)
-API externa → /api/* ─────┘                 └─ /api/* → FastAPI  → Agente (LLM + tools)
-                                                                     └─ modelo ML + SHAP
+```mermaid
+flowchart LR
+    U[Usuário] --> NGX
+    S[Sistemas externos] --> NGX
+    NGX["nginx (:7860)"] -->|"/"| ST[Streamlit · produto]
+    NGX -->|"/api/*"| API[FastAPI · API]
+    API --> AG[Agente · LLM + ferramentas]
+    AG --> ML[Modelo ML + SHAP]
 ```
 
 Um único container serve **produto e API** no mesmo link.
@@ -77,7 +81,8 @@ pytest                                               # testes
 | `monitoring/` | tracing JSONL (latência, custo, fallback, guardrails) |
 | `data/` | dataset Telco Churn + Data Card |
 
-## Deploy no Hugging Face Spaces
+## Deploy
 
-O frontmatter no topo deste arquivo configura o Space (`sdk: docker`, `app_port: 7860`).
-Crie um Space Docker, envie o repositório e defina `OPENAI_API_KEY` em *Settings → Secrets*.
+Em produção o sistema roda numa VPS via **EasyPanel**: um único container, build a partir do
+`Dockerfile` (Build Path `/`), porta interna **7860** e `OPENAI_API_KEY` nas variáveis de ambiente.
+Passo a passo completo em [docs/deploy.md](docs/deploy.md). App no ar: <https://churn.lcsgborges.cloud/>.

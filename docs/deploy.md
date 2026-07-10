@@ -131,7 +131,3 @@ saúde do serviço no painel.
 | App responde mas sempre em *fallback* | `OPENAI_API_KEY` ausente/inválida | Configure a env e faça redeploy |
 | Build sem memória / muito lento | VPS com pouca RAM | Use a **Opção B** (imagem pronta) |
 | WebSocket do Streamlit não conecta | Proxy sem upgrade | O nginx interno já trata `/_stcore/`; garanta que o domínio aponta para 7860 |
-
-!!! note "HF Spaces vs. EasyPanel"
-    O frontmatter no topo do `README.md` (`sdk: docker`, `app_port: 7860`) é específico do Hugging Face
-    e é **ignorado** pelo EasyPanel — não atrapalha. A mesma imagem serve para os dois.

@@ -54,12 +54,11 @@ mkdocs serve            # http://localhost:8000
 mkdocs build            # gera site/ estático
 ```
 
-## Deploy no Hugging Face Spaces
+## Deploy em produção (VPS + EasyPanel)
 
-1. Crie um **Space** do tipo **Docker**.
-2. Envie o conteúdo desta pasta (o `README.md` já traz o frontmatter `sdk: docker`, `app_port: 7860`).
-3. Em **Settings → Secrets**, defina `OPENAI_API_KEY`.
-4. O Space builda o `Dockerfile` e publica **produto + API** no mesmo link.
+O sistema roda numa VPS via **EasyPanel**: um único container, build a partir do `Dockerfile`
+(Build Path `/`), porta interna **7860** e `OPENAI_API_KEY` nas variáveis de ambiente. O passo a passo
+completo está em [Deploy na VPS (EasyPanel)](deploy.md). App no ar: <https://churn.lcsgborges.cloud/>.
 
 !!! tip "Deploy da documentação"
     O workflow `.github/workflows/docs.yml` (na raiz do repositório) publica esta documentação no

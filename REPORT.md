@@ -80,7 +80,7 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 - **Empacotamento:** um único **Dockerfile** instala tudo, **treina o modelo no build** (reprodutível:
   clone → `docker compose up` → sistema no ar) e roda **três processos** via `start.sh`: uvicorn (API),
   Streamlit (produto) e **nginx** como reverse proxy.
-- **Exposição:** o HF Spaces publica **uma** porta. O nginx roteia `/` → produto e `/api/*` → API, então
+- **Exposição:** o deploy publica **uma** porta. O nginx roteia `/` → produto e `/api/*` → API, então
   **produto e API ficam no mesmo link público** (`/api/predict`, `/api/health`, `/api/docs`).
 - **Entradas em produção:** a API recebe perfis novos de clientes (mesmo esquema do dataset) via `POST /api/predict`
   ou `POST /api/chat`; o produto Streamlit monta esse JSON a partir do formulário.
