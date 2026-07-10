@@ -24,3 +24,6 @@ site/
 # SO / editor
 .DS_Store
 .ipynb_checkpoints/
+
+# Especificação do trabalho (referência local, não faz parte do projeto)
+spec/
