@@ -14,7 +14,7 @@
 
 ## Bibliotecas
 
-scikit-learn · SHAP · FastAPI · Streamlit · OpenAI Python SDK · Plotly · nginx · Docker · MkDocs Material.
+scikit-learn · SHAP · FastAPI · Jinja2 · Uvicorn · OpenAI Python SDK · Docker · MkDocs Material.
 
 ## Explicabilidade
 

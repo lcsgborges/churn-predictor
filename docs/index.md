@@ -29,7 +29,7 @@ sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação +
 | **API:** | [`/api/docs`](https://churn.lcsgborges.cloud/api/docs) · `/api/predict` · `/api/health` |
 | **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
 | **Relatório completo:** | [`REPORT.md`](https://github.com/lcsgborges/churn-predictor/blob/main/REPORT.md) |
-| **Integrantes:** | Lucas Guimarães |
+| **Integrante:** | Lucas Guimarães Borges — 222015159 |
 
 ## O que ele faz, em uma frase
 

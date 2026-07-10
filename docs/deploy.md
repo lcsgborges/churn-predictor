@@ -1,12 +1,12 @@
 # Deploy na sua VPS (EasyPanel)
 
 Guia passo a passo para hospedar o sistema numa VPS usando **EasyPanel**. O projeto é um único
-container Docker que expõe a porta **7860** (nginx → produto em `/` e API em `/api/*`); o EasyPanel
+container Docker que expõe a porta **7860** (FastAPI serve a UI em `/` e a API em `/api/*`); o EasyPanel
 coloca um proxy (Traefik) na frente, cuida do domínio e do HTTPS.
 
 ```
-Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (nginx) ─┬─ /      → Streamlit
-                                                                     └─ /api/* → FastAPI
+Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (FastAPI/uvicorn) ─┬─ GET /   → UI (HTML/JS)
+                                                                              └─ /api/*  → API JSON
 ```
 
 ## Pré-requisitos
@@ -16,7 +16,7 @@ Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (ngi
       (ex.: `churn.seudominio.com` → `A` → IP).
 - [x] Repositório no **GitHub** (push feito).
 - [x] Sua **`OPENAI_API_KEY`** (opcional — sem ela o sistema roda em modo *fallback*).
-- [x] Recomendado: VPS com **≥ 2 GB de RAM** (o build instala scikit-learn/shap/streamlit).
+- [x] Recomendado: VPS com **≥ 2 GB de RAM** (o build instala scikit-learn/shap).
 
 ---
 
@@ -25,8 +25,8 @@ Internet ──HTTPS──▶ Traefik (EasyPanel) ──▶ container :7860 (ngi
 !!! info "EasyPanel usa o `Dockerfile`, não o `docker-compose`"
     Cada serviço no EasyPanel constrói **um `Dockerfile` → um container**; ele **ignora** o
     `docker-compose.yml` (que serve só para rodar tudo localmente com um comando). Isso funciona aqui
-    porque o nosso `Dockerfile` é **auto-contido**: um único container sobe API + Streamlit + nginx
-    (via `start.sh`) e expõe tudo na porta **7860**. Ou seja, não há vários serviços para orquestrar.
+    porque o nosso `Dockerfile` é **auto-contido**: um único processo (`uvicorn`) serve a UI e a API
+    na porta **7860**. Ou seja, não há vários serviços para orquestrar.
 
 ### 1. Criar o projeto e o serviço
 1. No EasyPanel: **Create Project** → dê um nome (ex.: `churn`).
@@ -63,7 +63,7 @@ LLM_TIMEOUT_SECONDS=20
 ### 5. Domínio e porta
 Na aba **Domains**:
 1. **Add Domain** → informe seu domínio (ex.: `churn.seudominio.com`).
-2. Defina a **porta interna** do container como **`7860`** (é a porta que o nginx expõe).
+2. Defina a **porta interna** do container como **`7860`** (é a porta que o uvicorn expõe).
 3. Ative **HTTPS** (o EasyPanel gera o certificado Let's Encrypt automaticamente).
 
 ### 6. Deploy
@@ -130,4 +130,4 @@ saúde do serviço no painel.
 | `502 Bad Gateway` no domínio | Porta errada no domínio | Use a porta **7860** |
 | App responde mas sempre em *fallback* | `OPENAI_API_KEY` ausente/inválida | Configure a env e faça redeploy |
 | Build sem memória / muito lento | VPS com pouca RAM | Use a **Opção B** (imagem pronta) |
-| WebSocket do Streamlit não conecta | Proxy sem upgrade | O nginx interno já trata `/_stcore/`; garanta que o domínio aponta para 7860 |
+| Página em branco / 404 nos `/api/*` | Porta ou proxy errados | Garanta que o domínio aponta para a porta interna **7860** (uvicorn) |

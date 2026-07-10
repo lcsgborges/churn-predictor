@@ -4,14 +4,14 @@
 
 ```mermaid
 flowchart TD
-    Nav[Navegador / Sistemas] --> NGX["nginx — link público único (:7860)"]
+    Nav[Navegador / Sistemas] --> APP["FastAPI + uvicorn — porta única :7860"]
 
-    subgraph roteamento[Roteamento]
-        NGX -->|"/"| ST[Streamlit — produto :8501]
-        NGX -->|"/api/*"| API[FastAPI — API :8000]
+    subgraph proc["Um único processo"]
+        APP -->|"GET /"| UI[Produto — UI HTML/JS<br/>templates Jinja2]
+        APP -->|"/api/*"| API[API JSON<br/>predict · chat · health · metrics]
     end
 
-    ST --> AG
+    UI -. "fetch /api/*" .-> API
     API --> AG
 
     subgraph agente["Agente (agent/agent.py)"]
@@ -27,15 +27,16 @@ flowchart TD
     RESP --> MON["Monitoring JSONL: latência · custo · fallback · guardrails"]
 ```
 
-## Um container, um link
+## Um processo, um link
 
-O deploy expõe **uma** porta pública. Um **nginx** escuta nela (7860) e roteia:
+Um **único processo** (`uvicorn`) serve tudo na porta pública **7860**:
 
-- `/` → **Streamlit** (produto)
-- `/api/*` → **FastAPI** (API pública: `/api/predict`, `/api/health`, `/api/docs`)
+- `/` → **produto** (UI em HTML, templates Jinja2 + JavaScript que consome a API)
+- `/api/*` → **API JSON** (`/api/predict`, `/api/chat`, `/api/health`, `/api/metrics`, `/api/docs`)
 
-Assim **produto e API ficam no mesmo endereço**. O `start.sh` sobe os três processos:
-`uvicorn` (:8000) + `streamlit` (:8501) + `nginx` (:7860, foreground).
+Assim **produto e API ficam no mesmo endereço**. A UI é servida pelo próprio FastAPI e chama os
+endpoints `/api/*` via `fetch`; os gráficos (medidor de churn e fatores SHAP) são **SVG inline**.
+Menos peças, um único processo, deploy mais simples e confiável.
 
 ## Componentes
 
@@ -43,8 +44,8 @@ Assim **produto e API ficam no mesmo endereço**. O `start.sh` sobe os três pro
 |---|---|---|
 | Modelo | `ml/` | pré-processamento, treino, predição e explicação (SHAP) |
 | Agente | `agent/` | orquestração, prompts, ferramentas, guardrails, fallback |
-| API | `api/` | FastAPI + schemas Pydantic |
-| Produto | `product/` | painel Streamlit (Análise, Chat, Monitoramento) |
+| API + Produto | `api/` | FastAPI: API JSON (`/api/*`) **e** a UI (`GET /`) |
+| UI (templates) | `product/` | template Jinja2 (`templates/index.html`) + metadados do formulário |
 | Monitoramento | `monitoring/` | traces JSONL e agregação de métricas |
 
 ## Exploração de abordagens (agent/model)
@@ -71,11 +72,12 @@ O que consideramos antes de decidir:
 
 ## Deployment
 
-- **Empacotamento:** um único `Dockerfile` instala tudo, **treina o modelo no build** e roda três
-  processos via `start.sh` (uvicorn + Streamlit + nginx). Reprodutível: clone → `docker compose up` → no ar.
-- **Exposição:** uma porta pública (7860); o nginx roteia `/` → produto e `/api/*` → API.
+- **Empacotamento:** um único `Dockerfile` (multi-stage) instala tudo, **treina o modelo no build** e
+  roda **um único processo** — `uvicorn api.main:app` na porta 7860. Reprodutível: clone →
+  `docker compose up` → no ar.
+- **Exposição:** uma porta pública (7860); o próprio FastAPI serve `/` (UI) e `/api/*` (API).
 - **Entradas em produção:** a API recebe perfis de clientes (mesmo esquema do dataset) via
-  `POST /api/predict` ou `POST /api/chat`; o produto monta esse JSON a partir do formulário.
+  `POST /api/predict` ou `POST /api/chat`; a UI monta esse JSON a partir do formulário e chama via `fetch`.
 - Passo a passo em [Como rodar](como-rodar.md) e [Deploy na VPS](deploy.md).
 
 ## CI/CD

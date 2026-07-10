@@ -40,11 +40,12 @@ Resposta (resumo):
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python -m ml.train                        # treina models/churn_model.pkl
-uvicorn api.main:app --port 8000 &        # API
-streamlit run product/app.py              # produto
-pytest -q                                 # 20 testes
+python -m ml.train                                  # treina models/churn_model.pkl
+uvicorn api.main:app --reload --port 7860           # UI (/) + API (/api/*) no mesmo processo
+pytest -q                                           # testes
 ```
+
+Abra <http://localhost:7860/> para o produto e <http://localhost:7860/api/docs> para a API.
 
 ## Rodar a documentação (MkDocs)
 
