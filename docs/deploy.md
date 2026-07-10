@@ -110,20 +110,11 @@ saúde do serviço no painel.
 
 ---
 
-## Hospedar a documentação (esta doc) na VPS
-
-Além da app, você pode servir **esta documentação** na VPS como um serviço separado (ex.:
-`docs.seudominio.com`). Já existe um `Dockerfile.docs` que builda o MkDocs e serve o estático com nginx.
-
-1. No EasyPanel: **+ Service → App**.
-2. **Source:** mesmo repositório, **Build Path = `/`** (raiz).
-3. **Build:** Dockerfile → informe o caminho **`Dockerfile.docs`**.
-4. **Domains:** adicione `docs.seudominio.com` na **porta `80`**, com HTTPS.
-5. **Deploy.** Ative o **webhook** do GitHub em *Source* para redeploy automático a cada push.
-
-!!! note "Validação no CI"
-    O `.github/workflows/ci.yml` roda `mkdocs build --strict` a cada push (job **docs**), então links ou
-    nav quebrados são pegos **antes** de o EasyPanel publicar.
+!!! note "A documentação é publicada no GitHub Pages"
+    Esta doc **não** precisa ser hospedada na VPS: o workflow
+    [`.github/workflows/docs.yml`](https://github.com/lcsgborges/churn-predictor/blob/main/.github/workflows/docs.yml)
+    builda o MkDocs e publica no **GitHub Pages** a cada push na `main`. O `ci.yml` também roda
+    `mkdocs build --strict` para pegar links ou nav quebrados antes de publicar.
 
 ## Solução de problemas
 
