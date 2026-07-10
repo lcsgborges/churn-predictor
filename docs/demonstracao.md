@@ -4,7 +4,7 @@ Vídeo demonstrando o sistema funcionando em casos de uso reais, seguindo o flux
 do início ao resultado.
 
 !!! info "Vídeo"
-    O roteiro está pronto; o link será adicionado quando a gravação for publicada.
+    Assista à demonstração: <https://youtu.be/JKOghOuIQaA>
 
 ## Roteiro
 

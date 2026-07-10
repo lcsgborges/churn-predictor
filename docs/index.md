@@ -28,6 +28,7 @@ sobre o risco de cancelamento (churn) e devolve **probabilidade + explicação +
 | **Aplicação (link):** | <https://churn.lcsgborges.cloud/> |
 | **API:** | [`/api/docs`](https://churn.lcsgborges.cloud/api/docs) · `/api/predict` · `/api/health` |
 | **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
+| **Vídeo demo:** | <https://youtu.be/JKOghOuIQaA> |
 | **Relatório completo:** | [`REPORT.md`](https://github.com/lcsgborges/churn-predictor/blob/main/REPORT.md) |
 | **Integrante:** | Lucas Guimarães Borges — 222015159 |
 

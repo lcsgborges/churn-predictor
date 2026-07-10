@@ -27,3 +27,6 @@ site/
 
 # Especificação do trabalho (referência local, não faz parte do projeto)
 spec/
+
+# Roteiro do vídeo (uso pessoal, não faz parte do projeto)
+ROTEIRO_VIDEO.md

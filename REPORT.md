@@ -8,7 +8,7 @@
 | **API (link):** | <https://churn.lcsgborges.cloud/api/docs> · `/api/predict` · `/api/health` |
 | **Documentação:** | <https://lcsgborges.github.io/churn-predictor/> |
 | **Repositório:** | <https://github.com/lcsgborges/churn-predictor> |
-| **Vídeo demo:** | _Link a adicionar após a publicação_ |
+| **Vídeo demo:** | <https://youtu.be/JKOghOuIQaA> |
 | **Integrante:** | Lucas Guimarães Borges — 222015159 |
 
 ---
@@ -154,9 +154,9 @@ valor está em transformar a previsão em uma **ação priorizada e justificada*
 
 ## 5. Demonstração
 
-_Vídeo: link a adicionar após a publicação._ Roteiro sugerido: (1) carregar o perfil fictício "Exemplo: alto risco" → analisar → mostrar
+**Vídeo:** <https://youtu.be/JKOghOuIQaA>. Roteiro: (1) carregar o perfil fictício "Exemplo: alto risco" → analisar → mostrar
 probabilidade, fatores SHAP e ação; (2) usar o chat de retenção; (3) tentar um jailbreak → guardrail;
-(4) chamar a API pública via `curl /api/predict`; (5) abrir a aba Monitoramento.
+(4) chamar a API pública via `curl /api/predict`; (5) abrir a aba Indicadores (monitoramento).
 
 ---
 
